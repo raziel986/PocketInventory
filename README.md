@@ -19,7 +19,7 @@ PocketInventory es una Aplicación de Página Única (SPA) contenida íntegramen
 
 ## 🚀 Cómo usar
 
-1. Descarga el archivo `index.html`.
+1. Descarga el archivo `PocketInventory.html`.
 2. Ábrelo en cualquier navegador web moderno (Google Chrome, Firefox, Microsoft Edge, Safari).
 3. Aparecerá el Gestor de Oficinas: registra una oficina nueva y luego pulsa el botón **"Seleccionar ➡️"**.
 4. ¡Comienza a llenar el inventario! Toda la información introducida persistirá localmente, es decir, el navegador la recordará incluso si cierras la pestaña.
