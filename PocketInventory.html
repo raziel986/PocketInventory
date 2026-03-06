@@ -469,52 +469,33 @@
             <!-- Barra Lateral / Brand -->
             <div class="brand-card glass-card">
                 <div class="brand">
-                    <svg width="100%" height="100%" viewBox="0 0 600 300" version="1.1"
+                    <svg width="100%" height="100%" viewBox="0 0 600 200" version="1.1"
                         xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                        xml:space="preserve"
+                        xml:space="preserve" xmlns:serif="http://www.serif.com/"
                         style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
-                        <rect x="0" y="0" width="600" height="300" style="fill:none;" />
-
-                        <g id="keychain-minimal-logo" transform="translate(150, 20)">
-
-                            <circle cx="150" cy="70" r="60" style="fill:none;stroke:#b3b3b3;stroke-width:10;" />
-                            <circle cx="150" cy="70" r="54" style="fill:none;stroke:#d9d9d9;stroke-width:3;" />
-
-                            <g id="chain-links-minimal" transform="translate(135, 125)">
-                                <ellipse cx="15" cy="15" rx="14" ry="9"
-                                    style="fill:none;stroke:#b3b3b3;stroke-width:5;" />
-                                <ellipse cx="30" cy="35" rx="14" ry="9"
-                                    style="fill:none;stroke:#b3b3b3;stroke-width:5;" />
-                            </g>
-
-                            <g id="inventory-tag-minimal" transform="translate(90, 160)">
-                                <circle cx="60" cy="60" r="60" style="fill:#336699;" />
-
-                                <g transform="translate(30, 32)">
-                                    <path d="M0,17.321 L0,49.071 L27.5,65 L27.5,33.25 L0,17.321 Z"
-                                        style="fill:#ffffff;fill-opacity:0.95;" />
-                                    <path d="M55,17.321 L55,49.071 L27.5,65 L27.5,33.25 L55,17.321 Z"
-                                        style="fill:#e0e0e0;" />
-                                    <path d="M27.5,0 L55,15.875 L27.5,31.75 L0,15.875 L27.5,0 Z"
-                                        style="fill:#f0f0f0;" />
-
-                                    <path d="M27.5,31.75 L27.5,65"
-                                        style="fill:none;stroke:#336699;stroke-width:2.5;stroke-linecap:round;" />
-                                    <circle cx="27.5" cy="31.75" r="3.5" style="fill:#336699;" />
-                                </g>
+                        <rect x="0" y="0" width="600" height="200" style="fill:none;" />
+                        <g transform="translate(40, 40)">
+                            <circle cx="60" cy="60" r="60" style="fill:#336699;" />
+                            <g transform="translate(30, 32)">
+                                <path d="M0,17.321 L0,49.071 L27.5,65 L27.5,33.25 L0,17.321 Z"
+                                    style="fill:#ffffff;fill-opacity:0.9;" />
+                                <path d="M55,17.321 L55,49.071 L27.5,65 L27.5,33.25 L55,17.321 Z"
+                                    style="fill:#e0e0e0;" />
+                                <path d="M27.5,0 L55,15.875 L27.5,31.75 L0,15.875 L27.5,0 Z" style="fill:#f0f0f0;" />
+                                <path d="M27.5,31.75 L27.5,65"
+                                    style="fill:none;stroke:#336699;stroke-width:2;stroke-linecap:round;" />
+                                <circle cx="27.5" cy="31.75" r="3" style="fill:#336699;" />
                             </g>
                         </g>
-
-                        <g transform="translate(145, 230)">
+                        <g transform="translate(190, 115)">
                             <text x="0px" y="0px"
-                                style="font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-weight:700;font-size:48px;fill:#333333;">Pocket</text>
-                            <text x="160px" y="0px"
-                                style="font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-weight:400;font-size:48px;fill:#336699;">Inventory</text>
+                                style="font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-weight:700;font-size:52px;fill:#333333;">Pocket</text>
+                            <text x="175px" y="0px"
+                                style="font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-weight:400;font-size:52px;fill:#336699;">Inventory</text>
                         </g>
-
-                        <text x="300px" y="265px" text-anchor="middle"
-                            style="font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-weight:400;font-size:16px;fill:#777777;letter-spacing:1px;">PORTABLE
-                            IT ASSET MANAGER (SINGLE-FILE)</text>
+                        <text x="190px" y="145px"
+                            style="font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-weight:400;font-size:18px;fill:#777777;letter-spacing:1px;">SINGLE-FILE
+                            IT ASSET MANAGER</text>
                     </svg>
                 </div>
             </div>
@@ -1482,6 +1463,19 @@
         // Inicialización
         handleNetworkStatus();
         renderOfficesTable();
+
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
     </script>
 </body>
 
