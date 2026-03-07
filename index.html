@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PocketInventory - SPA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <!-- PWA Meta Tags -->
@@ -15,9 +21,9 @@
     <link rel="apple-touch-icon" href="icon-512.png">
     <link rel="manifest" href="manifest.json">
 
-    <!-- Librerías para Generación de PDF (jsPDF y jsPDF-AutoTable) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <!-- Librerías para Generación de PDF (jsPDF y jsPDF-AutoTable) - LOCAL para mayor velocidad -->
+    <script src="libs/jspdf.umd.min.js" defer></script>
+    <script src="libs/jspdf-autotable.min.js" defer></script>
     <style>
         * {
             box-sizing: border-box;
@@ -1874,16 +1880,14 @@
         handleNetworkStatus();
         renderOfficesTable();
 
-        // PWA Service Worker Registration
+        // PWA Service Worker Registration (deferred to avoid blocking)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(registration => {
-                        console.log('SW registered: ', registration);
-                    })
-                    .catch(registrationError => {
-                        console.log('SW registration failed: ', registrationError);
-                    });
+                setTimeout(() => {
+                    navigator.serviceWorker.register('sw.js')
+                        .then(reg => console.log('SW registered'))
+                        .catch(err => console.log('SW failed', err));
+                }, 1000); // Delay registration slightly
             });
         }
     </script>

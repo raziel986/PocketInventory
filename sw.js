@@ -4,9 +4,9 @@ const ASSETS_TO_CACHE = [
     './index.html',
     './manifest.json',
     './icon-512.png',
-    'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap',
-    'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js'
+    './libs/jspdf.umd.min.js',
+    './libs/jspdf-autotable.min.js',
+    'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap'
 ];
 
 // Install Event
