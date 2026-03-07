@@ -693,6 +693,76 @@
                 display: none !important;
             }
         }
+
+        /* Diagnostic Styles */
+        .icon-btn-diagnostic {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .icon-btn-diagnostic:hover {
+            color: #b45309;
+        }
+
+        .modal-body-diagnostic {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            text-align: left;
+        }
+
+        @media (min-width: 768px) {
+            .modal-body-diagnostic {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .diag-section {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .diag-section h4 {
+            margin: 0 0 1rem 0;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .diag-footer {
+            grid-column: 1 / -1;
+            margin-top: 1rem;
+        }
+
+        .diag-notes {
+            width: 100%;
+            min-height: 80px;
+            padding: 0.75rem;
+            border-radius: 12px;
+            border: 1px solid #d1d5db;
+            font-family: inherit;
+            resize: vertical;
+        }
     </style>
 </head>
 
@@ -1470,6 +1540,7 @@
                         </td>
                         <td data-label="Acciones" class="action-col">
                             <div class="action-icons">
+                                <button class="icon-btn icon-btn-diagnostic" title="Realizar Diagnóstico" onclick="openDiagnostic(${item.originalIndex})">🩺</button>
                                 <button class="icon-btn icon-btn-edit" title="Editar equipo" onclick="editItem(${item.originalIndex})">✏️</button>
                                 <button class="icon-btn icon-btn-danger" title="Eliminar equipo" onclick="deleteItem(${item.originalIndex})">🗑️</button>
                             </div>
@@ -1656,7 +1727,136 @@
         }
 
 
-        // ALTERNATIVA 2: Exportar a CSV (Compatible con Excel) de la Oficina
+        // MÓDULO DE DIAGNÓSTICO
+        let diagnosticIndex = -1;
+
+        async function openDiagnostic(index) {
+            diagnosticIndex = index;
+            const office = getActiveOffice();
+            const item = office.inventory[index];
+            const diag = item.diagnostics || { hardware: {}, software: {}, notes: '' };
+
+            const { value: formValues } = await Swal.fire({
+                title: '🩺 Diagnóstico Técnico',
+                html: `
+                    <div class="modal-body-diagnostic">
+                        <div class="diag-section">
+                            <h4>🔌 Hardware (Estándar ISO/IEC)</h4>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="hw-power" ${diag.hardware.power ? 'checked' : ''}>
+                                <label for="hw-power">Suministro Eléctrico / Batería</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="hw-storage" ${diag.hardware.storage ? 'checked' : ''}>
+                                <label for="hw-storage">Estado de Disco (S.M.A.R.T.)</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="hw-ram" ${diag.hardware.ram ? 'checked' : ''}>
+                                <label for="hw-ram">Integridad de Memoria RAM</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="hw-temp" ${diag.hardware.temp ? 'checked' : ''}>
+                                <label for="hw-temp">Disipación y Sensores de Temp.</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="hw-clean" ${diag.hardware.clean ? 'checked' : ''}>
+                                <label for="hw-clean">Limpieza Física y Puertos</label>
+                            </div>
+                        </div>
+                        <div class="diag-section">
+                            <h4>💿 Software (Estándar ITIL/Ciberseguridad)</h4>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="sw-os" ${diag.software.os ? 'checked' : ''}>
+                                <label for="sw-os">S.O. Original y Actualizado</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="sw-drivers" ${diag.software.drivers ? 'checked' : ''}>
+                                <label for="sw-drivers">Drivers Correctos / Sin Errores</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="sw-security" ${diag.software.security ? 'checked' : ''}>
+                                <label for="sw-security">Antivirus y Parches de Seguridad</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="sw-license" ${diag.software.license ? 'checked' : ''}>
+                                <label for="sw-license">Licenciamiento de Software</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="sw-performance" ${diag.software.performance ? 'checked' : ''}>
+                                <label for="sw-performance">Rendimiento y Procesos en 2do Plano</label>
+                            </div>
+                        </div>
+                        <div class="diag-footer">
+                            <label><strong>Observaciones Técnicas / Plan Sugerido:</strong></label>
+                            <textarea id="diag-notes" class="diag-notes" placeholder="Escribe el diagnóstico detallado o fallos encontrados...">${diag.notes || ''}</textarea>
+                        </div>
+                        ${item.diagnostics ? `
+                        <div class="diag-footer" style="text-align:center; margin-top:0;">
+                            <button type="button" class="btn btn-pdf" onclick="generateMaintenancePlanPDF(${index})" style="width:auto; display:inline-flex; padding: 0.5rem 1rem;">
+                                📄 Descargar Plan de Mantenimiento Actual
+                            </button>
+                        </div>` : ''}
+                    </div>
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: '💾 Guardar Diagnóstico',
+                cancelButtonText: 'Cancelar',
+                width: '900px',
+                preConfirm: () => {
+                    return {
+                        hardware: {
+                            power: document.getElementById('hw-power').checked,
+                            storage: document.getElementById('hw-storage').checked,
+                            ram: document.getElementById('hw-ram').checked,
+                            temp: document.getElementById('hw-temp').checked,
+                            clean: document.getElementById('hw-clean').checked
+                        },
+                        software: {
+                            os: document.getElementById('sw-os').checked,
+                            drivers: document.getElementById('sw-drivers').checked,
+                            security: document.getElementById('sw-security').checked,
+                            license: document.getElementById('sw-license').checked,
+                            performance: document.getElementById('sw-performance').checked
+                        },
+                        notes: document.getElementById('diag-notes').value,
+                        date: new Date().toISOString()
+                    }
+                }
+            });
+
+            if (formValues) {
+                saveDiagnostic(formValues);
+            }
+        }
+
+        function saveDiagnostic(data) {
+            const office = getActiveOffice();
+            office.inventory[diagnosticIndex].diagnostics = data;
+
+            // Generación automática de notas basadas en el diagnóstico
+            const fails = [];
+            if (!data.hardware.power) fails.push("Falla Eléctrica");
+            if (!data.hardware.storage) fails.push("Falla de Disco");
+            if (!data.hardware.ram) fails.push("Error de Memoria");
+            if (!data.software.security) fails.push("Riesgo de Seguridad");
+
+            if (fails.length > 0) {
+                office.inventory[diagnosticIndex].status = "Reparación";
+            }
+
+            saveAppData();
+            renderTable();
+
+            Swal.fire({
+                title: 'Diagnóstico Guardado',
+                text: 'El equipo ha sido actualizado con los hallazgos técnicos.',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+
         function exportToCSV() {
             const office = getActiveOffice();
             if (!office) return;
@@ -1909,7 +2109,144 @@
             doc.save(`PocketInventory_${filename}_${new Date().toISOString().split('T')[0]}.pdf`);
         }
 
-        // Lógica de Conexión Offline/Online
+        // GENERACIÓN DE PLAN DE MANTENIMIENTO PDF
+        function generateMaintenancePlanPDF(index) {
+            const office = getActiveOffice();
+            const item = office.inventory[index];
+            const diag = item.diagnostics;
+
+            if (!diag) {
+                return Swal.fire({
+                    title: 'Sin Diagnóstico',
+                    text: 'Primero debes realizar el diagnóstico técnico para generar un plan.',
+                    icon: 'warning'
+                });
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+
+            // Header
+            doc.setFillColor(79, 70, 229);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(22);
+            doc.setFont("helvetica", "bold");
+            doc.text("Plan de Mantenimiento Técnico", 15, 25);
+
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            doc.text(`ID Activo: ${item.assetTag} | Fecha: ${new Date().toLocaleDateString()}`, 15, 33);
+
+            // Información del Equipo
+            doc.setTextColor(15, 23, 42);
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text("1. Información del Activo", 15, 55);
+
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Categoría: ${item.type}`, 15, 62);
+            doc.text(`Modelo: ${item.model}`, 15, 67);
+            doc.text(`S/N: ${item.serial}`, 15, 72);
+            doc.text(`Usuario: ${item.user}`, 15, 77);
+
+            // Resultado del Diagnóstico
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text("2. Resultado del Diagnóstico", 15, 90);
+
+            let currentY = 100;
+            const drawCheck = (label, status, x, y) => {
+                doc.setFont("helvetica", status ? "bold" : "normal");
+                doc.setTextColor(status ? 16, 185, 129 : 239, 68, 68);
+                doc.text(status ? "√" : "X", x, y);
+                doc.setTextColor(15, 23, 42);
+                doc.setFont("helvetica", "normal");
+                doc.text(label, x + 5, y);
+            };
+
+            // Hardware
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "bold");
+            doc.text("Hardware:", 15, currentY);
+            currentY += 7;
+            drawCheck("Energía/Batería", diag.hardware.power, 20, currentY);
+            drawCheck("Almacenamiento", diag.hardware.storage, 80, currentY);
+            currentY += 7;
+            drawCheck("Memoria RAM", diag.hardware.ram, 20, currentY);
+            drawCheck("Temperaturas", diag.hardware.temp, 80, currentY);
+            currentY += 7;
+            drawCheck("Limpieza", diag.hardware.clean, 20, currentY);
+
+            // Software
+            currentY += 10;
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "bold");
+            doc.text("Software:", 15, currentY);
+            currentY += 7;
+            drawCheck("Sistema Operativo", diag.software.os, 20, currentY);
+            drawCheck("Seguridad/AV", diag.software.security, 80, currentY);
+            currentY += 7;
+            drawCheck("Rendimiento", diag.software.performance, 20, currentY);
+            drawCheck("Licenciamiento", diag.software.license, 80, currentY);
+
+            // Acciones Recomendadas
+            currentY += 15;
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text("3. Acciones Recomendadas (Plan)", 15, currentY);
+
+            currentY += 10;
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "bold");
+            doc.text("Mantenimiento Correctivo:", 15, currentY);
+            currentY += 6;
+            doc.setFont("helvetica", "normal");
+
+            const actions = [];
+            if (!diag.hardware.power) actions.push("- Revisión/reemplazo de fuente de poder o batería.");
+            if (!diag.hardware.storage) actions.push("- Respaldar datos e iniciar reemplazo de unidad de disco.");
+            if (!diag.hardware.ram) actions.push("- Test de memoria profundo y posible reemplazo de módulos.");
+            if (!diag.software.security) actions.push("- Instalación de parches de seguridad y actualización de Antivirus.");
+            if (!diag.hardware.clean) actions.push("- Mantenimiento preventivo físico (soplado y pasta térmica).");
+
+            if (actions.length === 0) actions.push("- No se requieren acciones correctivas inmediatas.");
+
+            actions.forEach(act => {
+                doc.text(act, 20, currentY);
+                currentY += 5;
+            });
+
+            currentY += 5;
+            doc.setFont("helvetica", "bold");
+            doc.text("Mantenimiento Preventivo Sugerido:", 15, currentY);
+            currentY += 6;
+            doc.setFont("helvetica", "normal");
+            doc.text("- Próxima revisión técnica recomendada en 6 meses.", 20, currentY);
+            currentY += 5;
+            doc.text("- Monitoreo mensual de actualizaciones de críticas.", 20, currentY);
+
+            // Observaciones
+            currentY += 15;
+            doc.setFont("helvetica", "bold");
+            doc.text("Observaciones del Técnico:", 15, currentY);
+            currentY += 7;
+            doc.setFont("helvetica", "normal");
+            const splitNotes = doc.splitTextToSize(diag.notes || "Sin observaciones adicionales.", 180);
+            doc.text(splitNotes, 15, currentY);
+
+            // Firmas
+            doc.setDrawColor(0);
+            doc.line(30, 260, 90, 260);
+            doc.text("Firma Técnico", 60, 265, null, null, "center");
+
+            doc.line(120, 260, 180, 260);
+            doc.text("Firma Cliente/Recibido", 150, 265, null, null, "center");
+
+            doc.save(`Plan_Mantenimiento_${item.assetTag}.pdf`);
+        }
+
         function handleNetworkStatus() {
             const pdfBtn = document.getElementById('pdfBtn');
             const pdfTooltip = document.getElementById('pdfTooltipText');
