@@ -1,4 +1,4 @@
-        * {
+﻿        * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
@@ -553,7 +553,7 @@
             margin-bottom: 1rem;
             padding: 0.5rem;
             align-items: center;
-            /* Centrado en móvil */
+            /* Centrado en mÃ³vil */
         }
 
         @media (min-width: 640px) {
@@ -777,3 +777,78 @@
             width: 16px;
             height: 16px;
         }
+        /* Language Toggle Switch */
+        .lang-toggle-container {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 0.3rem;
+            border-radius: 999px;
+            border: 1px solid var(--glass-border);
+            margin-left: auto;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 68px;
+            height: 28px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: .4s;
+            border-radius: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+        }
+
+        .slider-text {
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: #64748b;
+            transition: color 0.3s ease;
+            z-index: 1;
+            pointer-events: none;
+            line-height: 1;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 32px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 2;
+        }
+
+        input:checked + .slider {
+            background-color: #e2e8f0;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        /* Label highlight when knob is over the other side */
+        input:not(:checked) + .slider #lang-es { color: var(--primary); font-weight: 900; }
+        input:checked + .slider #lang-en { color: var(--primary); font-weight: 900; }

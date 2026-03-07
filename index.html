@@ -70,7 +70,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="PocketInv">
     <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📦</text></svg>">
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>">
     <link rel="apple-touch-icon" href="icon-512.png">
     <link rel="manifest" href="manifest.json">
 
@@ -89,7 +89,8 @@
             <div class="spinner-ring"></div>
             <div class="loader-text"> <span style="color: var(--primary)">Pocket</span><span
                     style="color: #000;">IT</span><span style="color: #1b8b2d">Check</span></div>
-            <div style="font-size: 0.85rem; color: var(--text-light);">Cargando Activos IT...</div>
+            <div style="font-size: 0.85rem; color: var(--text-light);" data-i18n="loadingAssets">Cargando Activos IT...
+            </div>
         </div>
     </div>
 
@@ -99,72 +100,91 @@
 
             <!-- Barra Lateral / Brand -->
             <div class="brand-card glass-card">
-                <div class="brand" style="display: flex; gap: 10px;">
-                    <div>
-                        <img src="img/logo.png" alt="PocketITCheck Logo" class="w-24 h-24 mb-4">
-                    </div>
-                    <div id="company">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <div class="brand" style="display: flex; gap: 10px;">
                         <div>
-                            <span style="color: var(--primary)">Pocket</span><span>IT</span><span
-                                style="color: #1b8b2d">Check</span>
+                            <img src="img/logo.png" alt="PocketITCheck Logo" class="w-24 h-24 mb-4">
                         </div>
-                        <span
-                            style="font-weight: bold; font-size: .5rem; color: #303030;margin-top: -10px; display: block;">
-                            Inventory | Disganostics | Maintenace | Repairs </span>
+                        <div id="company">
+                            <div>
+                                <span style="color: var(--primary)">Pocket</span><span>IT</span><span
+                                    style="color: #1b8b2d">Check</span>
+                            </div>
+                            <span data-i18n="appSlogan"
+                                style="font-weight: bold; font-size: .5rem; color: #303030;margin-top: -10px; display: block;">
+                                Inventory | Diagnostics | Maintenance | Repairs </span>
+                        </div>
+                    </div>
+                    <div class="lang-toggle-container">
+                        <label class="switch">
+                            <input type="checkbox" id="lang-toggle" onchange="toggleLanguage(this.checked)">
+                            <span class="slider">
+                                <span class="slider-text slider-text-es" id="lang-es">EN</span>
+                                <span class="slider-text slider-text-en" id="lang-en">ES</span>
+                            </span>
+                        </label>
                     </div>
                 </div>
             </div>
 
             <!-- VISTA: Formularios Nueva Oficina -->
             <div class="office-section glass-card" id="viewCreateOfficeSidebar">
-                <h2 style="font-size: 1.1rem; margin-bottom: 1.5rem;">🏢 Nueva Oficina</h2>
+                <h2 data-i18n="newOffice" style="font-size: 1.1rem; margin-bottom: 1.5rem;">🏢 Nueva Oficina</h2>
                 <form id="officeForm">
                     <div class="form-group">
-                        <label>Nombre Empresa / Cliente *</label>
-                        <input type="text" id="officeCompany" required placeholder="Ej: TechCorp S.A.">
+                        <label data-i18n="companyLabel">Nombre Empresa / Cliente *</label>
+                        <input type="text" id="officeCompany" required placeholder="Ej: TechCorp S.A."
+                            data-i18n-placeholder="officeCompanyPl">
                     </div>
                     <div class="form-group">
-                        <label>Departamento / Área</label>
-                        <input type="text" id="officeDepto" required placeholder="Ej: Recursos Humanos">
+                        <label data-i18n="deptLabel">Departamento / Área</label>
+                        <input type="text" id="officeDepto" required placeholder="Ej: Recursos Humanos"
+                            data-i18n-placeholder="officeDeptoPl">
                     </div>
                     <div class="form-group">
-                        <label>Ubicación Física</label>
-                        <input type="text" id="officeLocation" required placeholder="Ej: Sede Central - Piso 4">
+                        <label data-i18n="locationLabel">Ubicación Física</label>
+                        <input type="text" id="officeLocation" required placeholder="Ej: Sede Central - Piso 4"
+                            data-i18n-placeholder="officeLocationPl">
                     </div>
                     <div class="form-grid-2">
                         <div class="form-group">
-                            <label>Auditor Técnico *</label>
-                            <input type="text" id="officeAuditor" required placeholder="Ej: Carlos Noguera">
+                            <label data-i18n="auditorLabel">Auditor Técnico *</label>
+                            <input type="text" id="officeAuditor" required placeholder="Ej: Carlos Noguera"
+                                data-i18n-placeholder="officeAuditorPl">
                         </div>
                         <div class="form-group">
-                            <label>Empresa Auditora *</label>
-                            <input type="text" id="officeAuditorCompany" required placeholder="Ej: TechAudit Solutions">
+                            <label data-i18n="auditCompanyLabel">Empresa Auditora *</label>
+                            <input type="text" id="officeAuditorCompany" required placeholder="Ej: TechAudit Solutions"
+                                data-i18n-placeholder="officeAuditorCompanyPl">
                         </div>
                     </div>
                     <div class="form-grid-2">
                         <div class="form-group">
-                            <label>Fecha de Auditoría</label>
+                            <label data-i18n="auditDateLabel">Fecha de Auditoría</label>
                             <input type="date" id="officeDate" required>
                         </div>
                     </div>
                     <div class="form-grid-2">
                         <div class="form-group">
-                            <label>Responsable / Gerente *</label>
-                            <input type="text" id="officeManager" required placeholder="Ej: Roberto Gómez">
+                            <label data-i18n="managerLabel">Responsable / Gerente *</label>
+                            <input type="text" id="officeManager" required placeholder="Ej: Roberto Gómez"
+                                data-i18n-placeholder="officeManagerPl">
                         </div>
                         <div class="form-group">
-                            <label>Cargo del Responsable *</label>
+                            <label data-i18n="managerTitleLabel">Cargo del Responsable *</label>
                             <input type="text" id="officeManagerTitle" required
-                                placeholder="Ej: Director de Operaciones">
+                                placeholder="Ej: Director de Operaciones" data-i18n-placeholder="officeManagerTitlePl">
                         </div>
                     </div>
                     <div class="button-group">
-                        <button type="submit" class="btn btn-submit" id="submitBtnOffice" style="background:#10b981;">
-                            📝 Registrar Oficina
+                        <button type="submit" class="btn btn-submit" id="submitBtnOffice" style="background:#10b981;"
+                            data-i18n="registerOffice">
+                            🏢 Registrar Oficina
                         </button>
                         <button type="button" class="btn btn-clear" id="cancelEditOfficeBtn"
                             style="display: none; margin-top: 0; background-color: #fca5a5; color: white; border:none;"
-                            onclick="cancelEditOffice()">
+                            onclick="cancelEditOffice()" data-i18n="cancelEdit">
                             ❌ Cancelar Edición
                         </button>
                     </div>
@@ -174,7 +194,8 @@
             <!-- VISTA: Formulario Nuevo Equipo (Se oculta al inicio) -->
             <div class="input-section glass-card" id="viewAddEquipmentSidebar" style="display: none;">
                 <button type="button" class="btn btn-clear" onclick="goBackToOffices()"
-                    style="margin-top:0; margin-bottom: 1.5rem; background: #f1f5f9; border: 1px solid #cbd5e1; color: #334155;">
+                    style="margin-top:0; margin-bottom: 1.5rem; background: #f1f5f9; border: 1px solid #cbd5e1; color: #334155;"
+                    data-i18n="backToOffices">
                     ⬅️ Volver a Oficinas
                 </button>
                 <div id="activeOfficeSummary"
@@ -182,44 +203,49 @@
                     <!-- Detalles dinámicos -->
                 </div>
 
-                <h2 id="equipmentFormTitle" style="font-size: 1.1rem; margin-bottom: 1.5rem;">💻 Nuevo Equipo</h2>
+                <h2 id="equipmentFormTitle" style="font-size: 1.1rem; margin-bottom: 1.5rem;" data-i18n="newEquipment">
+                    💻 Nuevo Equipo</h2>
                 <form id="inventoryForm">
                     <div class="form-group">
-                        <label>Categoría</label>
+                        <label data-i18n="categoryLabel">Categoría</label>
                         <select id="type" required>
-                            <option value="" disabled selected>Selecciona un tipo...</option>
-                            <option value="Laptop">Laptop / Portátil</option>
-                            <option value="Desktop">Desktop / PC de Escritorio</option>
-                            <option value="Monitor">Monitor</option>
-                            <option value="Periférico">Periférico (Teclado/Mouse)</option>
-                            <option value="Impresora">Impresora / Escáner</option>
-                            <option value="Red">Equipo de Red (Router/Switch)</option>
+                            <option value="" disabled selected data-i18n="selectType">Selecciona un tipo...
+                            </option>
+                            <option value="Laptop" data-i18n="Laptop">Laptop / Portátil</option>
+                            <option value="Desktop" data-i18n="Desktop">Desktop / PC de Escritorio</option>
+                            <option value="Monitor" data-i18n="Monitor">Monitor</option>
+                            <option value="Periférico" data-i18n="Periférico">Periférico (Teclado/Mouse)</option>
+                            <option value="Impresora" data-i18n="Impresora">Impresora / Escáner</option>
+                            <option value="Red" data-i18n="Red">Equipo de Red (Router/Switch)</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Marca y Modelo</label>
-                        <input type="text" id="model" required placeholder="Ej: Lenovo ThinkPad T14">
+                        <label data-i18n="modelLabel">Marca y Modelo</label>
+                        <input type="text" id="model" required placeholder="Ej: Lenovo ThinkPad T14"
+                            data-i18n-placeholder="modelPl">
                     </div>
                     <div class="form-group">
-                        <label>Número de Serie (S/N)</label>
-                        <input type="text" id="serial" required placeholder="S/N o Service Tag">
+                        <label data-i18n="serialLabel">Número de Serie (S/N)</label>
+                        <input type="text" id="serial" required placeholder="S/N o Service Tag"
+                            data-i18n-placeholder="serialPl">
                     </div>
                     <!-- Standard IT Asset Fields (ITIL / ISO 20000) -->
                     <div class="form-group">
-                        <label>ID de Activo (Asset Tag) *</label>
-                        <input type="text" id="assetTag" required placeholder="Ej: IT-LT-0042">
+                        <label data-i18n="assetTagLabel">ID de Activo (Asset Tag) *</label>
+                        <input type="text" id="assetTag" required placeholder="Ej: IT-LT-0042"
+                            data-i18n-placeholder="assetTagPl">
                     </div>
                     <div class="form-group">
-                        <label>Estado del Activo *</label>
+                        <label data-i18n="statusLabel">Estado del Activo *</label>
                         <select id="status" required>
-                            <option value="Activo" selected>Activo / En Uso</option>
-                            <option value="Stock">En Stock / Almacén</option>
-                            <option value="Reparación">En Reparación</option>
-                            <option value="Baja">Dado de Baja / Desechado</option>
+                            <option value="Activo" selected data-i18n="Activo">Activo / En Uso</option>
+                            <option value="Stock" data-i18n="Stock">En Stock / Almacén</option>
+                            <option value="Reparación" data-i18n="Reparación">En Reparación</option>
+                            <option value="Baja" data-i18n="Baja">Dado de Baja / Desechado</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>¿Cobertura de Garantía Vigente?</label>
+                        <label data-i18n="warrantyCover">¿Cobertura de Garantía Vigente?</label>
                         <select id="hasWarranty" onchange="toggleDates()">
                             <option value="Sí" selected>Sí</option>
                             <option value="No">No</option>
@@ -227,35 +253,37 @@
                     </div>
                     <div class="form-grid-2" id="datesContainer">
                         <div class="form-group">
-                            <label>Fecha de Compra</label>
+                            <label data-i18n="purchaseDateLabel">Fecha de Compra</label>
                             <input type="date" id="purchaseDate">
                         </div>
                         <div class="form-group">
-                            <label>Garantía Hasta</label>
+                            <label data-i18n="warrantyUntilLabel">Garantía Hasta</label>
                             <input type="date" id="warrantyDate">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Asignación (Usuario o Ubicación)</label>
-                        <input type="text" id="user" required placeholder="Ej: Juan Pérez / Sala Juntas A">
+                        <label data-i18n="assignmentLabel">Asignación (Usuario o Ubicación)</label>
+                        <input type="text" id="user" required placeholder="Ej: Juan Pérez / Sala Juntas A"
+                            data-i18n-placeholder="userPl">
                     </div>
 
                     <!-- Contenedor dinámico según categoría -->
                     <div id="dynamicFieldsContainer"></div>
 
                     <div class="form-group">
-                        <label>Notas Adicionales</label>
-                        <input type="text" id="notes" placeholder="Ej: RAM 16GB, SSD 512GB...">
+                        <label data-i18n="extraNotes">Notas Adicionales</label>
+                        <input type="text" id="notes" placeholder="Ej: RAM 16GB, SSD 512GB..."
+                            data-i18n-placeholder="notesPl">
                     </div>
 
                     <!-- Botones de Acción sobre INVENTARIO -->
                     <div class="button-group">
-                        <button type="submit" id="submitBtnEquipment" class="btn btn-submit">
+                        <button type="submit" id="submitBtnEquipment" class="btn btn-submit" data-i18n="addEquipment">
                             ➕ Añadir Equipo
                         </button>
                         <button type="button" class="btn btn-clear" id="cancelEditBtn"
                             style="display: none; margin-top: 0; background-color: #fca5a5; color: white; border:none;"
-                            onclick="cancelEdit()">
+                            onclick="cancelEdit()" data-i18n="cancelEdit">
                             ❌ Cancelar Edición
                         </button>
 
@@ -270,7 +298,7 @@
         <div class="output-section glass-card" id="viewOfficesTable">
             <h2
                 style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-                <span>🏢 Gestor de Oficinas y Clientes</span>
+                <span data-i18n="officeManagerSub">📋 Gestor de Oficinas y Clientes</span>
                 <span id="officeCountBadge"
                     style="font-size: 0.9rem; background: #e0e7ff; color: #4338ca; padding: 0.25rem 0.75rem; border-radius: 9999px;">
                     0 oficinas
@@ -278,17 +306,17 @@
             </h2>
             <div class="table-controls">
                 <div class="table-control-group">
-                    <label>Ver</label>
+                    <label data-i18n="viewLabel">Ver</label>
                     <select id="officeLength" class="length-select" onchange="changeLength('offices', this.value)">
-                        <option value="10">10 registros</option>
-                        <option value="25">25 registros</option>
-                        <option value="50">50 registros</option>
-                        <option value="all">Todo</option>
+                        <option value="10">10 <span data-i18n="recordsLabel">registros</span></option>
+                        <option value="25">25 <span data-i18n="recordsLabel">registros</span></option>
+                        <option value="50">50 <span data-i18n="recordsLabel">registros</span></option>
+                        <option value="all" data-i18n="allLabel">Todo</option>
                     </select>
                 </div>
                 <div class="search-input-wrapper">
                     <span class="search-icon">🔍</span>
-                    <input type="text" id="officeSearch" placeholder="Buscar oficina..."
+                    <input type="text" id="officeSearch" placeholder="Buscar..." data-i18n-placeholder="searchPl"
                         oninput="handleSearch('offices', this.value)">
                 </div>
             </div>
@@ -296,11 +324,11 @@
                 <table id="officesTable">
                     <thead>
                         <tr>
-                            <th>Empresa / Cliente</th>
-                            <th>Ubicación</th>
-                            <th>Auditor</th>
-                            <th style="text-align: center;">Equipos</th>
-                            <th class="action-col" style="text-align: center;">Acción</th>
+                            <th data-i18n="companyLabel">Empresa / Cliente</th>
+                            <th data-i18n="locationLabel">Ubicación</th>
+                            <th data-i18n="techAuditor">Auditor</th>
+                            <th style="text-align: center;" data-i18n="equips">Equipos</th>
+                            <th class="action-col" style="text-align: center;" data-i18n="actionsLabel">Acción</th>
                         </tr>
                     </thead>
                     <tbody id="officesTableBody">
@@ -326,7 +354,8 @@
                     <h1 style="color:#0f172a; margin-bottom:0; font-size: 1.5rem;">PocketITCheck</h1>
                 </div>
                 <div>
-                    <h2 style="color:#0f172a; font-size: 1.3rem; margin-bottom: 0.2rem;">Inventario de Equipos IT</h2>
+                    <h2 style="color:#0f172a; font-size: 1.3rem; margin-bottom: 0.2rem;" data-i18n="newEquipment">
+                        Inventario de Equipos IT</h2>
                     <p style="color:#64748b; font-size: 1rem;" id="printDate"></p>
                 </div>
             </div>
@@ -336,42 +365,42 @@
                     style="margin-bottom:0.8rem; font-size:1.1rem; border-bottom:1px solid #e2e8f0; padding-bottom:0.3rem;">
                     Información del Levantamiento</h3>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-                    <div><strong>Empresa:</strong> <span id="print_company">-</span></div>
-                    <div><strong>Departamento:</strong> <span id="print_depto">-</span></div>
-                    <div><strong>Ubicación:</strong> <span id="print_location">-</span></div>
-                    <div><strong>Auditor:</strong> <span id="print_auditor">-</span></div>
+                    <div><strong data-i18n="companyLabel">Empresa:</strong> <span id="print_company">-</span></div>
+                    <div><strong data-i18n="deptLabel">Departamento:</strong> <span id="print_depto">-</span></div>
+                    <div><strong data-i18n="locationLabel">Ubicación:</strong> <span id="print_location">-</span></div>
+                    <div><strong data-i18n="techAuditor">Auditor:</strong> <span id="print_auditor">-</span></div>
                 </div>
             </div>
 
             <h2
                 style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span>📦 Inventario de Equipos</span>
+                    <span data-i18n="newEquipment">💻 Inventario de Equipos</span>
                     <span id="itemCount" class="badge-count">0 items</span>
                 </div>
                 <div style="display: flex; gap: 0.5rem;">
                     <button class="icon-btn icon-btn-info" title="Plan Maestro de Mantenimiento"
-                        onclick="generateMasterMaintenancePlanPDF()">🛠️</button>
+                        onclick="generateMasterMaintenancePlanPDF()">📊</button>
                     <button class="icon-btn icon-btn-info" title="Informe de Resultados"
-                        onclick="generateResultsReportPDF()">📋</button>
-                    <button class="icon-btn icon-btn-info" title="Exportar CSV" onclick="exportToCSV()">📊</button>
+                        onclick="generateResultsReportPDF()">📈</button>
+                    <button class="icon-btn icon-btn-info" title="Exportar CSV" onclick="exportToCSV()">📂</button>
                     <button class="icon-btn icon-btn-info" title="Generar PDF" onclick="exportToPDF()">📄</button>
                 </div>
             </h2>
 
             <div class="table-controls">
                 <div class="table-control-group">
-                    <label>Ver</label>
+                    <label data-i18n="viewLabel">Ver</label>
                     <select id="equipmentLength" class="length-select" onchange="changeLength('equipment', this.value)">
-                        <option value="10">10 registros</option>
-                        <option value="25">25 registros</option>
-                        <option value="50">50 registros</option>
-                        <option value="all">Todo</option>
+                        <option value="10">10 <span data-i18n="recordsLabel">registros</span></option>
+                        <option value="25">25 <span data-i18n="recordsLabel">registros</span></option>
+                        <option value="50">50 <span data-i18n="recordsLabel">registros</span></option>
+                        <option value="all" data-i18n="allLabel">Todo</option>
                     </select>
                 </div>
                 <div class="search-input-wrapper">
                     <span class="search-icon">🔍</span>
-                    <input type="text" id="equipmentSearch" placeholder="Buscar equipo..."
+                    <input type="text" id="equipmentSearch" placeholder="Buscar..." data-i18n-placeholder="searchPl"
                         oninput="handleSearch('equipment', this.value)">
                 </div>
             </div>
@@ -379,11 +408,11 @@
                 <table id="inventoryTable">
                     <thead>
                         <tr>
-                            <th>ID Activo</th>
-                            <th>Info General</th>
-                            <th>Estado & Asignación</th>
-                            <th>Especificaciones Técnicas</th>
-                            <th class="action-col" style="text-align: center;">Acción</th>
+                            <th data-i18n="assetTagLabel">ID Activo</th>
+                            <th data-i18n="infoGeneral">Info General</th>
+                            <th data-i18n="statusAssignment">Estado & Asignación</th>
+                            <th data-i18n="techSpecs">Especificaciones Técnicas</th>
+                            <th class="action-col" style="text-align: center;" data-i18n="actionsLabel">Acción</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -400,7 +429,8 @@
                 style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #f1f5f9; padding-bottom: 1rem; margin-bottom: 1.5rem;">
                 <div>
                     <h2 id="diag-title"
-                        style="margin: 0; color: var(--primary); display: flex; align-items: center; gap: 0.5rem;">🩺
+                        style="margin: 0; color: var(--primary); display: flex; align-items: center; gap: 0.5rem;"
+                        data-i18n="diagTitle">🩺
                         Diagnóstico Técnico</h2>
                     <p id="diag-subtitle" style="margin: 0.2rem 0 0 0; color: var(--text-light);"></p>
                 </div>
@@ -411,20 +441,22 @@
             </div>
 
             <div style="margin-top: 2rem; border-top: 2px solid #f1f5f9; padding-top: 1.5rem;">
-                <label style="display: block; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-main);">📝
+                <label style="display: block; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-main);"
+                    data-i18n="observations">📝
                     Observaciones y Recomendaciones:</label>
                 <textarea id="diag-notes-input" class="diag-notes"
                     style="width: 100%; min-height: 100px; padding: 1rem; border-radius: 12px; border: 1px solid #cbd5e1; font-family: inherit; resize: vertical;"
-                    placeholder="Detalles técnicos encontrados..."></textarea>
+                    placeholder="Detalles técnicos encontrados..." data-i18n-placeholder="diagNotesPl"></textarea>
 
                 <div class="button-group" style="margin-top: 1.5rem;">
                     <button class="btn btn-submit" style="flex: 2; padding: 0.75rem;"
-                        onclick="saveIntegratedDiagnosticFlow()">💾 Guardar Cambios en Activo</button>
-                    <button id="diag-pdf-btn" class="btn btn-pdf" style="flex: 1; padding: 0.75rem;">📄 Generar Plan
-                        PDF</button>
+                        onclick="saveIntegratedDiagnosticFlow()" data-i18n="saveAsset">💾 Guardar Cambios en
+                        Activo</button>
+                    <button id="diag-pdf-btn" class="btn btn-pdf" style="flex: 1; padding: 0.75rem;"
+                        data-i18n="generatePlan">📄 Generar Plan PDF</button>
                     <button class="btn btn-clear"
                         style="flex: 1; padding: 0.75rem; background-color: #fca5a5; color: white; border: none;"
-                        onclick="closeIntegratedDiagnostic()">✕ Cerrar</button>
+                        onclick="closeIntegratedDiagnostic()" data-i18n="close">❌ Cerrar</button>
                 </div>
             </div>
         </div>
@@ -435,7 +467,8 @@
                 style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #f1f5f9; padding-bottom: 1rem; margin-bottom: 1.5rem;">
                 <div>
                     <h2 id="result-title"
-                        style="margin: 0; color: #059669; display: flex; align-items: center; gap: 0.5rem;">✅
+                        style="margin: 0; color: #059669; display: flex; align-items: center; gap: 0.5rem;"
+                        data-i18n="maintResult">✅
                         Resultado de Mantenimiento</h2>
                     <p id="result-subtitle" style="margin: 0.2rem 0 0 0; color: var(--text-light);"></p>
                 </div>
@@ -443,23 +476,23 @@
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
                 <div class="form-group">
-                    <label style="font-weight: 700;">Estado del Mantenimiento:</label>
+                    <label style="font-weight: 700;" data-i18n="maintStatus">Estado del Mantenimiento:</label>
                     <select id="result-status"
                         style="width:100%; padding: 0.6rem; border-radius: 8px; border: 1px solid #cbd5e1; font-family: inherit;">
                         <option value="Pendiente">⏳ Pendiente</option>
-                        <option value="Parcial">🔧 Parcial</option>
+                        <option value="Parcial">🛠️ Parcial</option>
                         <option value="Completado">✅ Completado</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label style="font-weight: 700;">Fecha de Ejecución:</label>
+                    <label style="font-weight: 700;" data-i18n="execDate">Fecha de Ejecución:</label>
                     <input type="date" id="result-date"
                         style="width:100%; padding: 0.6rem; border-radius: 8px; border: 1px solid #cbd5e1; font-family: inherit;">
                 </div>
             </div>
 
             <div style="margin-bottom: 1.5rem;">
-                <h5
+                <h5 data-i18n="diagItems"
                     style="margin-bottom: 0.8rem; color: #64748b; border-bottom: 2px solid #cbd5e1; font-size: 0.9rem; padding-bottom: 0.3rem;">
                     ÍTEMS DIAGNOSTICADOS — Marcar los resueltos</h5>
                 <div id="result-items-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
@@ -468,18 +501,20 @@
             </div>
 
             <div style="margin-top: 1.5rem; border-top: 2px solid #f1f5f9; padding-top: 1.5rem;">
-                <label style="display: block; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-main);">📝
+                <label style="display: block; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-main);"
+                    data-i18n="postMaintNotes">📝
                     Notas Post-Mantenimiento:</label>
                 <textarea id="result-notes-input"
                     style="width: 100%; min-height: 100px; padding: 1rem; border-radius: 12px; border: 1px solid #cbd5e1; font-family: inherit; resize: vertical;"
-                    placeholder="Detallar las acciones correctivas ejecutadas..."></textarea>
+                    placeholder="Detallar las acciones correctivas ejecutadas..."
+                    data-i18n-placeholder="maintNotesPl"></textarea>
 
                 <div class="button-group" style="margin-top: 1.5rem;">
-                    <button class="btn btn-submit" style="flex: 2; padding: 0.75rem;"
-                        onclick="saveMaintenanceResult()">💾 Guardar Resultado</button>
+                    <button class="btn btn-submit" style="flex: 2; padding: 0.75rem;" onclick="saveMaintenanceResult()"
+                        data-i18n="saveResult">💾 Guardar Resultado</button>
                     <button class="btn btn-clear"
                         style="flex: 1; padding: 0.75rem; background-color: #fca5a5; color: white; border: none;"
-                        onclick="closeMaintenanceResult()">✕ Cerrar</button>
+                        onclick="closeMaintenanceResult()" data-i18n="close">❌ Cerrar</button>
                 </div>
             </div>
         </div>
