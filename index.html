@@ -1019,7 +1019,9 @@
 
                     <!-- Botones de Acción sobre INVENTARIO -->
                     <div class="button-group">
-
+                        <button type="submit" id="submitBtnEquipment" class="btn btn-submit">
+                            ➕ Añadir Equipo
+                        </button>
                         <button type="button" class="btn btn-clear" id="cancelEditBtn"
                             style="display: none; margin-top: 0; background-color: #fca5a5; color: white; border:none;"
                             onclick="cancelEdit()">
@@ -1117,8 +1119,6 @@
                     <span id="itemCount" class="badge-count">0 items</span>
                 </div>
                 <div style="display: flex; gap: 0.5rem;">
-                    <button id="submitIconButton" class="icon-btn icon-btn-edit" title="Añadir Equipo"
-                        onclick="document.getElementById('inventoryForm').requestSubmit()">➕</button>
                     <button class="icon-btn icon-btn-info" title="Exportar CSV" onclick="exportToCSV()">📊</button>
                     <button class="icon-btn icon-btn-info" title="Generar PDF" onclick="exportToPDF()">📄</button>
                 </div>
@@ -1221,7 +1221,7 @@
         const dynamicContainer = document.getElementById('dynamicFieldsContainer');
         const submitBtnOffice = document.getElementById('submitBtnOffice');
         const cancelEditOfficeBtn = document.getElementById('cancelEditOfficeBtn');
-        const submitBtnEquipment = document.getElementById('submitIconButton');
+        const submitBtnEquipment = document.getElementById('submitBtnEquipment');
         const cancelEditEquipmentBtn = document.getElementById('cancelEditBtn');
 
         // Función central para guardar en memoria
@@ -1693,7 +1693,7 @@
             if (editingIndex > -1) {
                 office.inventory[editingIndex] = newItem;
                 editingIndex = -1;
-                submitBtn.innerHTML = '➕ Añadir Equipo';
+                submitBtnEquipment.innerHTML = '➕ Añadir Equipo';
                 cancelEditBtn.style.display = 'none';
             } else {
                 office.inventory.push(newItem);
@@ -1757,10 +1757,9 @@
             dynamicContainer.innerHTML = '';
 
             // Si el elemento existe (para evitar errores si no se ha cargado)
-            const iconBtn = document.getElementById('submitIconButton');
-            if (iconBtn) {
-                iconBtn.innerHTML = '➕';
-                iconBtn.title = 'Añadir Equipo';
+            if (submitBtnEquipment) {
+                submitBtnEquipment.innerHTML = '➕ Añadir Equipo';
+                submitBtnEquipment.title = 'Añadir Equipo';
             }
             const title = document.getElementById('equipmentFormTitle');
             if (title) title.innerHTML = '💻 Nuevo Equipo';
@@ -2052,11 +2051,8 @@
             doc.setTextColor(79, 70, 229);
             doc.text("Resumen de Inventario", 175, 21);
 
-            doc.setFontSize(9);
-            doc.setFont("helvetica", "normal");
-            doc.setTextColor(15, 23, 42);
-            doc.text(`Total: ${stats.total} | Activos: ${stats.Activo} | Stock: ${stats.Stock}`, 175, 27);
-            doc.text(`Reparación: ${stats.Reparación} | Baja: ${stats.Baja}`, 175, 32);
+            doc.text("Total: " + stats.total + " | Activos: " + stats.Activo + " | Stock: " + stats.Stock, 175, 27);
+            doc.text("Reparación: " + stats.Reparación + " | Baja: " + stats.Baja, 175, 32);
 
             // Funciones de ayuda para concatenar Negrita + Normal en JS PDF
             function drawLabelValue(label, value, x, y) {
@@ -2079,7 +2075,7 @@
             doc.setFont("helvetica", "bold");
             doc.text("Auditor Inst.:", 100, 50);
             doc.setFont("helvetica", "normal");
-            doc.text(`${office.auditor}`, 100 + doc.getTextWidth("Auditor Inst.: ") + 1, 50);
+            doc.text(String(office.auditor), 100 + doc.getTextWidth("Auditor Inst.: ") + 1, 50);
             doc.setFontSize(10);
             doc.setTextColor(15, 23, 42);
 
@@ -2087,7 +2083,7 @@
             doc.setFont("helvetica", "bold");
             doc.text("Resp. Aprobador:", 180, 50);
             const respLabelWidth = doc.getTextWidth("Resp. Aprobador: ");
-            doc.text(`${office.manager} (${office.managerTitle})`, 180 + respLabelWidth, 50);
+            doc.text(String(office.manager) + " (" + String(office.managerTitle) + ")", 180 + respLabelWidth, 50);
 
             doc.setDrawColor(203, 213, 225);
             doc.line(14, 54, 280, 54);
@@ -2153,10 +2149,10 @@
             doc.setFont("helvetica", "bold");
             doc.text("FIRMA DEL AUDITOR TÉCNICO", 60, sigY + 6, null, null, "center");
             doc.setFont("helvetica", "bold");
-            doc.text(`${String(office.auditor).toUpperCase()}`, 60, sigY + 12, null, null, "center");
+            doc.text(String(office.auditor).toUpperCase(), 60, sigY + 12, null, null, "center");
             doc.setFont("helvetica", "italic");
             doc.setFontSize(9);
-            doc.text(`${String(office.auditorCompany).toUpperCase()}`, 60, sigY + 17, null, null, "center");
+            doc.text(String(office.auditorCompany).toUpperCase(), 60, sigY + 17, null, null, "center");
             doc.setFontSize(10); // Reset for next elements
 
             // Central Stamp Area
@@ -2175,12 +2171,12 @@
 
             // Name in Bold (Already set by the line above, but we enforce it just in case)
             doc.setFont("helvetica", "bold");
-            doc.text(`${String(office.manager).toUpperCase()}`, 230, sigY + 12, null, null, "center");
+            doc.text(String(office.manager).toUpperCase(), 230, sigY + 12, null, null, "center");
 
             // Title underneath Name in Regular/Italic
             doc.setFont("helvetica", "italic");
             doc.setFontSize(9);
-            doc.text(`${String(office.managerTitle).toUpperCase()}`, 230, sigY + 17, null, null, "center");
+            doc.text(String(office.managerTitle).toUpperCase(), 230, sigY + 17, null, null, "center");
 
             // Guardar PDF
             let filename = office.company.replace(/[^a-z0-9]/gi, '_').toLowerCase();
