@@ -340,6 +340,12 @@
             border: 1px solid #e2e8f0;
         }
 
+        @media (min-width: 1024px) {
+            .table-container {
+                overflow-x: hidden;
+            }
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
