@@ -118,23 +118,32 @@
                         </div>
                     </div>
                     <div class="lang-toggle-container">
-                        <label class="switch">
-                            <input type="checkbox" id="lang-toggle" onchange="toggleLanguage(this.checked)">
-                            <span class="slider">
-                                <span class="slider-text slider-text-es" id="lang-es">ES</span>
-                                <span class="slider-text slider-text-en" id="lang-en">EN</span>
-                            </span>
-                        </label>
+        <aside class="sidebar glass-card">
+            <!-- Brand & Info -->
+            <div class="brand-card">
+                <div class="brand">
+                    <img src="./img/logo.png" alt="PocketITCheck Logo" />
+                    <div class="brand-text">
+                        <h1 class="app-name">PocketITCheck</h1>
+                        <p class="app-tagline" data-i18n="appSlogan">Inventario | Diagnóstico | Mantenimiento</p>
                     </div>
+                </div>
+                
+                <div class="lang-selector">
+                    <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-light);">ES</span>
+                    <label class="switch-lang">
+                        <input type="checkbox" id="langToggle" onchange="toggleLanguage(this.checked)">
+                        <span class="slider-lang"></span>
+                    </label>
+                    <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-light);">EN</span>
                 </div>
             </div>
 
-            <!-- Navigation Links -->
-            <nav class="nav-menu glass-card">
+            <nav class="nav-menu">
                 <ul>
                     <li class="nav-item active" id="nav-offices" onclick="showSection('offices-section')">
                         <span class="nav-icon">🏢</span>
-                        <span data-i18n="navOffices">Oficinas / Sedes</span>
+                        <span data-i18n="navOffices">Sedes / Oficinas</span>
                     </li>
                     <li class="nav-item" id="nav-dashboard" onclick="showSection('dashboard-section')">
                         <span class="nav-icon">📊</span>
@@ -143,28 +152,13 @@
                 </ul>
             </nav>
 
-            <!-- VISTA: Formularios Nueva Oficina -->
-            <div class="office-section glass-card" id="viewCreateOfficeSidebar">
-                <h2 data-i18n="newOffice" style="font-size: 1.1rem; margin-bottom: 1.5rem;">🏢 Nueva Oficina</h2>
-                <form id="officeForm">
-                    <div class="form-group">
-                        <label data-i18n="companyLabel">Nombre Empresa / Cliente *</label>
-                        <input type="text" id="officeCompany" required placeholder="Ej: TechCorp S.A."
-                            data-i18n-placeholder="officeCompanyPl">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="deptLabel">Departamento / Área</label>
-                        <input type="text" id="officeDepto" required placeholder="Ej: Recursos Humanos"
-                            data-i18n-placeholder="officeDeptoPl">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="locationLabel">Ubicación Física</label>
-                        <input type="text" id="officeLocation" required placeholder="Ej: Sede Central - Piso 4"
-                            data-i18n-placeholder="officeLocationPl">
-                    </div>
-                    <div class="form-grid-2">
-                        <div class="form-group">
-                            <label data-i18n="auditorLabel">Auditor Técnico *</label>
+            <div class="sidebar-footer">
+                <button class="btn btn-submit" onclick="openOfficeModal()" style="border-radius: 12px; margin-top: 1rem;">
+                    <span class="nav-icon">➕</span> <span data-i18n="newOffice">Nueva Oficina</span>
+                </button>
+            </div>
+        </aside>
+
                             <input type="text" id="officeAuditor" required placeholder="Ej: Carlos Noguera"
                                 data-i18n-placeholder="officeAuditorPl">
                         </div>
@@ -559,6 +553,50 @@
                 </div>
             </div>
         </div>
+
+        <!-- TEMPLATES OCULTOS PARA MODALES (SweetAlert2) -->
+    <template id="office-form-template">
+        <div class="office-modal-form" style="text-align: left;">
+            <div class="form-group">
+                <label data-i18n="companyLabel">Nombre Empresa / Cliente *</label>
+                <input type="text" id="modal-officeCompany" class="swal2-input" style="margin: 0; width: 100%;">
+            </div>
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label data-i18n="deptLabel">Departamento</label>
+                    <input type="text" id="modal-officeDepto" class="swal2-input" style="margin: 0; width: 100%;">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="locationLabel">Ubicación</label>
+                    <input type="text" id="modal-officeLocation" class="swal2-input" style="margin: 0; width: 100%;">
+                </div>
+            </div>
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label data-i18n="techAuditor">Auditor</label>
+                    <input type="text" id="modal-officeAuditor" class="swal2-input" style="margin: 0; width: 100%;">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="auditDate">Fecha</label>
+                    <input type="date" id="modal-officeDate" class="swal2-input" style="margin: 0; width: 100%;">
+                </div>
+            </div>
+            <div class="form-group">
+                <label data-i18n="auditCompany">Empresa Auditora</label>
+                <input type="text" id="modal-officeAuditorCompany" class="swal2-input" style="margin: 0; width: 100%;">
+            </div>
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label data-i18n="officeManager">Responsable</label>
+                    <input type="text" id="modal-officeManager" class="swal2-input" style="margin: 0; width: 100%;">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="managerTitle">Cargo</label>
+                    <input type="text" id="modal-officeManagerTitle" class="swal2-input" style="margin: 0; width: 100%;">
+                </div>
+            </div>
+        </div>
+    </template>
 
         <!-- Footer con Créditos y Licencia -->
         <footer class="app-footer glass-card">

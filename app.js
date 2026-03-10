@@ -51,6 +51,10 @@ async function init() {
     renderOfficesTable();
     initDashboard(appData, currentLang);
     
+    // Sync lang toggle
+    const toggle = document.getElementById('langToggle');
+    if (toggle) toggle.checked = (currentLang === 'en');
+
     if (dom.splash) {
         setTimeout(() => {
             dom.splash.classList.add('splash-hidden');
@@ -58,6 +62,66 @@ async function init() {
         }, 600);
     }
 }
+
+window.openOfficeModal = async (officeId = null) => {
+    const isEdit = !!officeId;
+    const office = isEdit ? appData.find(o => o.id === officeId) : null;
+    editingOfficeId = officeId;
+
+    const { value: formValues } = await Swal.fire({
+        title: isEdit ? t(currentLang, 'saveChanges') : t(currentLang, 'newOffice'),
+        html: document.getElementById('office-form-template').innerHTML,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: t(currentLang, 'confirmBtn'),
+        cancelButtonText: t(currentLang, 'cancelBtn'),
+        didOpen: () => {
+            if (isEdit) {
+                document.getElementById('modal-officeCompany').value = office.company;
+                document.getElementById('modal-officeDepto').value = office.depto;
+                document.getElementById('modal-officeLocation').value = office.location;
+                document.getElementById('modal-officeAuditor').value = office.auditor;
+                document.getElementById('modal-officeAuditorCompany').value = office.auditorCompany;
+                document.getElementById('modal-officeDate').value = office.auditDate;
+                document.getElementById('modal-officeManager').value = office.manager;
+                document.getElementById('modal-officeManagerTitle').value = office.managerTitle;
+            } else {
+                document.getElementById('modal-officeDate').value = new Date().toISOString().split('T')[0];
+            }
+        },
+        preConfirm: () => {
+            const company = document.getElementById('modal-officeCompany').value;
+            if (!company) {
+                Swal.showValidationMessage(t(currentLang, 'companyLabel') + ' is required');
+                return false;
+            }
+            return {
+                id: isEdit ? officeId : Date.now().toString(),
+                company: company.trim(),
+                depto: document.getElementById('modal-officeDepto').value.trim(),
+                location: document.getElementById('modal-officeLocation').value.trim(),
+                auditor: document.getElementById('modal-officeAuditor').value.trim(),
+                auditorCompany: document.getElementById('modal-officeAuditorCompany').value.trim(),
+                auditDate: document.getElementById('modal-officeDate').value,
+                manager: document.getElementById('modal-officeManager').value.trim(),
+                managerTitle: document.getElementById('modal-officeManagerTitle').value.trim(),
+                inventory: isEdit ? office.inventory : []
+            };
+        }
+    });
+
+    if (formValues) {
+        if (isEdit) {
+            const idx = appData.findIndex(o => o.id === officeId);
+            appData[idx] = formValues;
+        } else {
+            appData.push(formValues);
+        }
+        await saveOffice(formValues);
+        renderOfficesTable();
+        Swal.fire({ title: t(currentLang, 'successMsg'), icon: 'success', timer: 1000, showConfirmButton: false });
+    }
+};
 
 // Global Exports for HTML
 window.showSection = (sectionId) => {
@@ -364,27 +428,11 @@ window.deleteEquipment = async (index) => {
 };
 
 window.editOffice = (id) => {
-    editingOfficeId = id;
-    const office = appData.find(o => o.id === id);
-    document.getElementById('officeCompany').value = office.company;
-    document.getElementById('officeDepto').value = office.depto;
-    document.getElementById('officeLocation').value = office.location;
-    document.getElementById('officeAuditor').value = office.auditor;
-    document.getElementById('officeAuditorCompany').value = office.auditorCompany;
-    document.getElementById('officeDate').value = office.auditDate;
-    document.getElementById('officeManager').value = office.manager;
-    document.getElementById('officeManagerTitle').value = office.managerTitle;
-
-    dom.submitBtnOffice.innerHTML = `💾 ${t(currentLang, 'saveChanges')}`;
-    dom.cancelEditOfficeBtn.style.display = 'inline-block';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    openOfficeModal(id);
 };
 
 window.cancelEditOffice = () => {
     editingOfficeId = null;
-    dom.officeForm.reset();
-    dom.submitBtnOffice.innerHTML = `📝 ${t(currentLang, 'registerOffice')}`;
-    dom.cancelEditOfficeBtn.style.display = 'none';
 };
 
 // --- Diagnostic Logic (Integrated View) ---
@@ -609,37 +657,8 @@ window.exportToCSV = () => {
     document.body.removeChild(link);
 };
 
-// --- Form Listeners ---
-dom.officeForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const office = {
-        id: editingOfficeId || Date.now().toString(),
-        company: document.getElementById('officeCompany').value.trim(),
-        depto: document.getElementById('officeDepto').value.trim(),
-        location: document.getElementById('officeLocation').value.trim(),
-        auditor: document.getElementById('officeAuditor').value.trim(),
-        auditorCompany: document.getElementById('officeAuditorCompany').value.trim(),
-        auditDate: document.getElementById('officeDate').value,
-        manager: document.getElementById('officeManager').value.trim(),
-        managerTitle: document.getElementById('officeManagerTitle').value.trim(),
-        inventory: editingOfficeId ? appData.find(o => o.id === editingOfficeId).inventory : []
-    };
-
-    if (editingOfficeId) {
-        const idx = appData.findIndex(o => o.id === editingOfficeId);
-        appData[idx] = office;
-        editingOfficeId = null;
-        dom.submitBtnOffice.innerHTML = `📝 ${t(currentLang, 'registerOffice')}`;
-        dom.cancelEditOfficeBtn.style.display = 'none';
-    } else {
-        appData.push(office);
-    }
-
-    await saveOffice(office);
-    renderOfficesTable();
-    dom.officeForm.reset();
-    Swal.fire({ title: t(currentLang, 'successMsg'), icon: 'success', timer: 1000, showConfirmButton: false });
-});
+// --- Global Events ---
+// (Listeners move to Modals or specific actions)
 
 // Start Init
 init();
