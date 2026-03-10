@@ -4,10 +4,10 @@
 
 const { useState, useEffect, useMemo } = React;
 
-// Import logic from existing modules (assuming they are still available in global scope or via import)
-import { getAllOffices, saveOffice, deleteOffice, migrateFromLocalStorage } from './db.js';
-import { translations, t } from './translations.js';
-import { DIAG_SCHEMA } from './diagnostic.js';
+// Import logic from existing modules (adjusted for root-relative paths for Babel in browser)
+import { getAllOffices, saveOffice, deleteOffice, migrateFromLocalStorage } from './js/db.js';
+import { translations, t } from './js/translations.js';
+import { DIAG_SCHEMA } from './js/diagnostic.js';
 
 // --- Components ---
 
