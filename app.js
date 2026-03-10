@@ -378,6 +378,9 @@ window.cancelEditOffice = () => {
     editingOfficeId = null;
     dom.officeForm.reset();
     dom.submitBtnOffice.innerHTML = `📝 ${t(currentLang, 'registerOffice')}`;
+    dom.cancelEditOfficeBtn.style.display = 'none';
+};
+
 // --- Diagnostic Logic (Integrated View) ---
 
 window.openDiagnostic = (index) => {
@@ -599,6 +602,38 @@ window.exportToCSV = () => {
     link.click();
     document.body.removeChild(link);
 };
+
+// --- Form Listeners ---
+dom.officeForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const office = {
+        id: editingOfficeId || Date.now().toString(),
+        company: document.getElementById('officeCompany').value.trim(),
+        depto: document.getElementById('officeDepto').value.trim(),
+        location: document.getElementById('officeLocation').value.trim(),
+        auditor: document.getElementById('officeAuditor').value.trim(),
+        auditorCompany: document.getElementById('officeAuditorCompany').value.trim(),
+        auditDate: document.getElementById('officeDate').value,
+        manager: document.getElementById('officeManager').value.trim(),
+        managerTitle: document.getElementById('officeManagerTitle').value.trim(),
+        inventory: editingOfficeId ? appData.find(o => o.id === editingOfficeId).inventory : []
+    };
+
+    if (editingOfficeId) {
+        const idx = appData.findIndex(o => o.id === editingOfficeId);
+        appData[idx] = office;
+        editingOfficeId = null;
+        dom.submitBtnOffice.innerHTML = `📝 ${t(currentLang, 'registerOffice')}`;
+        dom.cancelEditOfficeBtn.style.display = 'none';
+    } else {
+        appData.push(office);
+    }
+
+    await saveOffice(office);
+    renderOfficesTable();
+    dom.officeForm.reset();
+    Swal.fire({ title: t(currentLang, 'successMsg'), icon: 'success', timer: 1000, showConfirmButton: false });
+});
 
 // Start Init
 init();
