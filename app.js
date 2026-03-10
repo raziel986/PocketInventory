@@ -89,17 +89,33 @@ window.selectOffice = (id) => {
     const o = appData.find(o => o.id === id);
     if (!o) return;
     activeOfficeId = id;
+    
+    // UI logic
     dom.sidebarOffices.style.display = 'none';
     dom.viewOffices.style.display = 'none';
-    dom.sidebarEquip.style.display = 'block';
+    
+    // On mobile, we hide sidebar by default
+    if (isMobile()) {
+        dom.sidebarEquip.style.display = 'none';
+    } else {
+        dom.sidebarEquip.style.display = 'block';
+    }
+    
     dom.viewEquip.style.display = 'block';
     updateOfficeSummaryUI(o);
     renderTable();
+    updateNavUI('inventory');
 };
 
 window.goBackToOffices = () => {
     activeOfficeId = null;
-    dom.sidebarOffices.style.display = 'block';
+    
+    if (isMobile()) {
+        dom.sidebarOffices.style.display = 'none';
+    } else {
+        dom.sidebarOffices.style.display = 'block';
+    }
+    
     dom.viewOffices.style.display = 'block';
     dom.sidebarEquip.style.display = 'none';
     dom.viewEquip.style.display = 'none';
@@ -125,23 +141,24 @@ window.switchView = (view) => {
         renderTable();
     } else if (view === 'diagnostic') {
         if (!activeOfficeId || diagnosticIndex === null) {
-             // If diagnostic is not open but we are in inventory, maybe open the first one or show warning
-             if (activeOfficeId && tableState.equipment) {
-                 // Conceptually, diagnostic view is per item. 
-                 // If the user clicks 'Diagnostic' button in nav, we show a hint or the current active one.
-                 const o = appData.find(off => off.id === activeOfficeId);
-                 if (o && o.inventory.length > 0) {
-                     window.openDiagnostic(0); 
-                 } else {
-                     Swal.fire(t(currentLang, 'integratedDiag'), t(currentLang, 'emptyAssets'), 'warning');
-                 }
+             const o = appData.find(off => off.id === activeOfficeId);
+             if (o && o.inventory.length > 0) {
+                 window.openDiagnostic(0); 
              } else {
-                Swal.fire(t(currentLang, 'integratedDiag'), t(currentLang, 'emptyOffices'), 'warning');
+                 Swal.fire(t(currentLang, 'integratedDiag'), t(currentLang, 'emptyOffices'), 'warning');
+                 return;
              }
-             return;
         }
+        document.getElementById('diag-integrated-section').style.display = 'block';
+        dom.viewEquip.style.display = 'none';
+        dom.sidebarEquip.style.display = 'none';
+        updateNavUI('diagnostic');
     }
 };
+
+function isMobile() {
+    return window.innerWidth <= 1024;
+}
 
 function updateNavUI(activeView) {
     document.querySelectorAll('.nav-item').forEach(item => {
@@ -237,8 +254,27 @@ function renderTable() {
         const paged = state.itemsPerPage === Infinity ? filtered : filtered.slice(start, start + state.itemsPerPage);
         paged.forEach(item => {
             const tr = document.createElement('tr');
-            // ... truncated for brevity but conceptually the same as previous app.js ...
-            tr.innerHTML = `<td>${item.assetTag}</td><td>${item.model}</td><td>${item.status}</td><td>${item.user}</td><td>Action</td>`;
+            tr.innerHTML = `
+                <td data-label="${t(currentLang, 'assetTagLabel')}"><strong>${item.assetTag}</strong></td>
+                <td data-label="${t(currentLang, 'infoGeneral')}">
+                    <span class="text-primary">${item.model}</span><br/>
+                    <span class="serial-tag">${item.serial}</span>
+                </td>
+                <td data-label="${t(currentLang, 'statusAssignment')}">
+                    <span class="status-badge status-${item.status.toLowerCase()}">${t(currentLang, item.status)}</span><br/>
+                    <span class="text-secondary">${item.user}</span>
+                </td>
+                <td data-label="${t(currentLang, 'techSpecs')}">
+                    <div class="line-height-14">${item.type}</div>
+                    ${item.hasWarranty === 'Sí' ? `<div class="warranty-info">📅 ${item.warrantyDate}</div>` : ''}
+                </td>
+                <td data-label="${t(currentLang, 'actionsLabel')}" class="action-col">
+                    <div class="action-icons">
+                        <button class="icon-btn icon-btn-info" onclick="openDiagnostic(${item.originalIndex})" title="Diagnóstico">🩺</button>
+                        <button class="icon-btn icon-btn-edit" onclick="editEquipment(${item.originalIndex})">✏️</button>
+                        <button class="icon-btn icon-btn-danger" onclick="deleteEquipment(${item.originalIndex})">🗑️</button>
+                    </div>
+                </td>`;
             dom.equipTbody.appendChild(tr);
         });
         updatePagination('equipment', filtered.length, 'equipmentPagination', state, currentLang, (p) => { state.currentPage = p; renderTable(); });
