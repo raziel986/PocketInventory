@@ -96,24 +96,27 @@
 
     <div class="container" style="max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem;">
         <!-- Barra Lateral / Brand -->
-        <div class="brand-card glass-card">
-            <div
-                style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-                <div class="brand" style="display: flex; gap: 10px;">
-                    <div>
-                        <img src="img/logo.png" alt="PocketITCheck Logo" class="w-24 h-24 mb-4">
+        <div class="brand-card glass-card" style="padding: 1.25rem 2rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+
+                <!-- Logo (izquierda) -->
+                <div style="flex-shrink: 0;">
+                    <img src="img/logo.png" alt="PocketITCheck Logo" style="height: 56px; width: auto; display: block;">
+                </div>
+
+                <!-- Título y eslogan (centro) -->
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 1.9rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.5px;">
+                        <span style="color: var(--primary)">Pocket</span><span style="color: #0f172a;">IT</span><span style="color: #1b8b2d;">Check</span>
                     </div>
-                    <div id="company">
-                        <div>
-                            <span style="color: var(--primary)">Pocket</span><span>IT</span><span
-                                style="color: #1b8b2d">Check</span>
-                        </div>
-                        <span data-i18n="appSlogan"
-                            style="font-weight: bold; font-size: .5rem; color: #303030;margin-top: -10px; display: block;">
-                            Inventory | Diagnostics | Maintenance | Repairs </span>
+                    <div data-i18n="appSlogan"
+                        style="font-size: 0.75rem; font-weight: 600; color: #64748b; margin-top: 4px; letter-spacing: 0.3px;">
+                        Inventario | Diagnóstico | Mantenimiento | Reparaciones
                     </div>
                 </div>
-                <div class="lang-toggle-container">
+
+                <!-- Language Switch (derecha) -->
+                <div style="flex-shrink: 0;" class="lang-toggle-container">
                     <label class="switch">
                         <input type="checkbox" id="lang-toggle" onchange="toggleLanguage(this.checked)">
                         <span class="slider">
@@ -122,6 +125,7 @@
                         </span>
                     </label>
                 </div>
+
             </div>
         </div>
 
@@ -134,22 +138,26 @@
             </button>
             <h2 data-i18n="newOffice" style="font-size: 1.1rem; margin-bottom: 1.5rem;">🏢 Nueva Oficina</h2>
                 <form id="officeForm">
-                    <div class="form-group">
-                        <label data-i18n="companyLabel">Nombre Empresa / Cliente *</label>
-                        <input type="text" id="officeCompany" required placeholder="Ej: TechCorp S.A."
-                            data-i18n-placeholder="officeCompanyPl">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="deptLabel">Departamento / Área</label>
-                        <input type="text" id="officeDepto" required placeholder="Ej: Recursos Humanos"
-                            data-i18n-placeholder="officeDeptoPl">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="locationLabel">Ubicación Física</label>
-                        <input type="text" id="officeLocation" required placeholder="Ej: Sede Central - Piso 4"
-                            data-i18n-placeholder="officeLocationPl">
-                    </div>
-                    <div class="form-grid-2">
+                    <div class="form-grid-4" style="gap: 1rem;">
+                        <div class="form-group">
+                            <label data-i18n="companyLabel">Nombre Empresa / Cliente *</label>
+                            <input type="text" id="officeCompany" required placeholder="Ej: TechCorp S.A."
+                                data-i18n-placeholder="officeCompanyPl">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="deptLabel">Departamento / Área</label>
+                            <input type="text" id="officeDepto" required placeholder="Ej: Recursos Humanos"
+                                data-i18n-placeholder="officeDeptoPl">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="locationLabel">Ubicación Física</label>
+                            <input type="text" id="officeLocation" required placeholder="Ej: Sede Central - Piso 4"
+                                data-i18n-placeholder="officeLocationPl">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="auditDateLabel">Fecha de Auditoría</label>
+                            <input type="date" id="officeDate" required>
+                        </div>
                         <div class="form-group">
                             <label data-i18n="auditorLabel">Auditor Técnico *</label>
                             <input type="text" id="officeAuditor" required placeholder="Ej: Carlos Noguera"
@@ -160,14 +168,6 @@
                             <input type="text" id="officeAuditorCompany" required placeholder="Ej: TechAudit Solutions"
                                 data-i18n-placeholder="officeAuditorCompanyPl">
                         </div>
-                    </div>
-                    <div class="form-grid-2">
-                        <div class="form-group">
-                            <label data-i18n="auditDateLabel">Fecha de Auditoría</label>
-                            <input type="date" id="officeDate" required>
-                        </div>
-                    </div>
-                    <div class="form-grid-2">
                         <div class="form-group">
                             <label data-i18n="managerLabel">Responsable / Gerente *</label>
                             <input type="text" id="officeManager" required placeholder="Ej: Roberto Gómez"
@@ -179,13 +179,13 @@
                                 placeholder="Ej: Director de Operaciones" data-i18n-placeholder="officeManagerTitlePl">
                         </div>
                     </div>
-                    <div class="button-group">
-                        <button type="submit" class="btn btn-submit" id="submitBtnOffice" style="background:#10b981;"
+                    <div class="button-group" style="flex-direction: row; flex-wrap: wrap; margin-top: 1.5rem;">
+                        <button type="submit" class="btn btn-submit" id="submitBtnOffice" style="background:#10b981; flex: 1; min-width: 180px;"
                             data-i18n="registerOffice">
                             🏢 Registrar Oficina
                         </button>
                         <button type="button" class="btn btn-clear" id="cancelEditOfficeBtn"
-                            style="display: none; margin-top: 0; background-color: #fca5a5; color: white; border:none;"
+                            style="display: none; flex: 1; min-width: 140px; background-color: #fca5a5; color: white; border:none;"
                             onclick="cancelEditOffice()" data-i18n="cancelEdit">
                             ❌ Cancelar Edición
                         </button>
@@ -208,52 +208,51 @@
                 <h2 id="equipmentFormTitle" style="font-size: 1.1rem; margin-bottom: 1.5rem;" data-i18n="newEquipment">
                     💻 Nuevo Equipo</h2>
                 <form id="inventoryForm">
-                    <div class="form-group">
-                        <label data-i18n="categoryLabel">Categoría</label>
-                        <select id="type" required>
-                            <option value="" disabled selected data-i18n="selectType">Selecciona un tipo...
-                            </option>
-                            <option value="Laptop" data-i18n="Laptop">Laptop / Portátil</option>
-                            <option value="Desktop" data-i18n="Desktop">Desktop / PC de Escritorio</option>
-                            <option value="Monitor" data-i18n="Monitor">Monitor</option>
-                            <option value="Periférico" data-i18n="Periférico">Periférico (Teclado/Mouse)</option>
-                            <option value="Impresora" data-i18n="Impresora">Impresora / Escáner</option>
-                            <option value="Red" data-i18n="Red">Equipo de Red (Router/Switch)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="modelLabel">Marca y Modelo</label>
-                        <input type="text" id="model" required placeholder="Ej: Lenovo ThinkPad T14"
-                            data-i18n-placeholder="modelPl">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="serialLabel">Número de Serie (S/N)</label>
-                        <input type="text" id="serial" required placeholder="S/N o Service Tag"
-                            data-i18n-placeholder="serialPl">
-                    </div>
-                    <!-- Standard IT Asset Fields (ITIL / ISO 20000) -->
-                    <div class="form-group">
-                        <label data-i18n="assetTagLabel">ID de Activo (Asset Tag) *</label>
-                        <input type="text" id="assetTag" required placeholder="Ej: IT-LT-0042"
-                            data-i18n-placeholder="assetTagPl">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="statusLabel">Estado del Activo *</label>
-                        <select id="status" required>
-                            <option value="Activo" selected data-i18n="Activo">Activo / En Uso</option>
-                            <option value="Stock" data-i18n="Stock">En Stock / Almacén</option>
-                            <option value="Reparación" data-i18n="Reparación">En Reparación</option>
-                            <option value="Baja" data-i18n="Baja">Dado de Baja / Desechado</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="warrantyCover">¿Cobertura de Garantía Vigente?</label>
-                        <select id="hasWarranty" onchange="toggleDates()">
-                            <option value="Sí" selected>Sí</option>
-                            <option value="No">No</option>
-                        </select>
-                    </div>
-                    <div class="form-grid-2" id="datesContainer">
+                    <div class="form-grid-3" style="gap: 1rem;">
+                        <div class="form-group">
+                            <label data-i18n="categoryLabel">Categoría</label>
+                            <select id="type" required onchange="updateDynamicFields(this.value)">
+                                <option value="" disabled selected data-i18n="selectType">Selecciona un tipo...
+                                </option>
+                                <option value="Laptop" data-i18n="Laptop">Laptop / Portátil</option>
+                                <option value="Desktop" data-i18n="Desktop">Desktop / PC de Escritorio</option>
+                                <option value="Monitor" data-i18n="Monitor">Monitor</option>
+                                <option value="Periférico" data-i18n="Periférico">Periférico (Teclado/Mouse)</option>
+                                <option value="Impresora" data-i18n="Impresora">Impresora / Escáner</option>
+                                <option value="Red" data-i18n="Red">Equipo de Red (Router/Switch)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="modelLabel">Marca y Modelo</label>
+                            <input type="text" id="model" required placeholder="Ej: Lenovo ThinkPad T14"
+                                data-i18n-placeholder="modelPl">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="serialLabel">Número de Serie (S/N)</label>
+                            <input type="text" id="serial" required placeholder="S/N o Service Tag"
+                                data-i18n-placeholder="serialPl">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="assetTagLabel">ID de Activo (Asset Tag) *</label>
+                            <input type="text" id="assetTag" required placeholder="Ej: IT-LT-0042"
+                                data-i18n-placeholder="assetTagPl">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="statusLabel">Estado del Activo *</label>
+                            <select id="status" required>
+                                <option value="Activo" selected data-i18n="Activo">Activo / En Uso</option>
+                                <option value="Stock" data-i18n="Stock">En Stock / Almacén</option>
+                                <option value="Reparación" data-i18n="Reparación">En Reparación</option>
+                                <option value="Baja" data-i18n="Baja">Dado de Baja / Desechado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="warrantyCover">¿Cobertura de Garantía Vigente?</label>
+                            <select id="hasWarranty" onchange="toggleDates()">
+                                <option value="Sí" selected>Sí</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
                         <div class="form-group">
                             <label data-i18n="purchaseDateLabel">Fecha de Compra</label>
                             <input type="date" id="purchaseDate">
@@ -262,36 +261,36 @@
                             <label data-i18n="warrantyUntilLabel">Garantía Hasta</label>
                             <input type="date" id="warrantyDate">
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="assignmentLabel">Asignación (Usuario o Ubicación)</label>
-                        <input type="text" id="user" required placeholder="Ej: Juan Pérez / Sala Juntas A"
-                            data-i18n-placeholder="userPl">
+                        <div class="form-group">
+                            <label data-i18n="assignmentLabel">Asignación (Usuario o Ubicación)</label>
+                            <input type="text" id="user" required placeholder="Ej: Juan Pérez / Sala Juntas A"
+                                data-i18n-placeholder="userPl">
+                        </div>
                     </div>
 
                     <!-- Contenedor dinámico según categoría -->
-                    <div id="dynamicFieldsContainer"></div>
+                    <div id="dynamicFieldsContainer" style="margin-top: 0.5rem;"></div>
 
-                    <div class="form-group">
+                    <div class="form-group" style="margin-top: 1rem;">
                         <label data-i18n="extraNotes">Notas Adicionales</label>
                         <input type="text" id="notes" placeholder="Ej: RAM 16GB, SSD 512GB..."
                             data-i18n-placeholder="notesPl">
                     </div>
 
                     <!-- Botones de Acción sobre INVENTARIO -->
-                    <div class="button-group">
-                        <button type="submit" id="submitBtnEquipment" class="btn btn-submit" data-i18n="addEquipment">
+                    <div class="button-group" style="flex-direction: row; flex-wrap: wrap; margin-top: 1.5rem;">
+                        <button type="submit" id="submitBtnEquipment" class="btn btn-submit" data-i18n="addEquipment" style="flex: 1; min-width: 180px;">
                             ➕ Añadir Equipo
                         </button>
                         <button type="button" class="btn btn-clear" id="cancelEditBtn"
-                            style="display: none; margin-top: 0; background-color: #fca5a5; color: white; border:none;"
+                            style="display: none; flex: 1; min-width: 140px; background-color: #fca5a5; color: white; border:none;"
                             onclick="cancelEdit()" data-i18n="cancelEdit">
                             ❌ Cancelar Edición
                         </button>
-
                     </div>
                 </form>
             </div>
+
 
         <!-- CUERPO DERECHO: VISTA Lista de Oficinas -->
         <div class="output-section glass-card" id="viewOfficesTable">
