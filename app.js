@@ -79,9 +79,15 @@ window.showSection = (sectionId) => {
 
     // Sidebar logic
     if (sectionId === 'offices-section') {
-        dom.sidebarOffices.style.display = 'block';
-        dom.sidebarEquip.style.display = 'none';
+        if (dom.sidebarOffices) dom.sidebarOffices.style.display = 'block';
+        if (dom.sidebarEquip) dom.sidebarEquip.style.display = 'none';
         activeOfficeId = null;
+    } else if (sectionId === 'dashboard-section') {
+        if (dom.sidebarOffices) dom.sidebarOffices.style.display = 'none';
+        if (dom.sidebarEquip) dom.sidebarEquip.style.display = 'none';
+    } else if (sectionId === 'equipment-section') {
+        if (dom.sidebarOffices) dom.sidebarOffices.style.display = 'none';
+        if (dom.sidebarEquip) dom.sidebarEquip.style.display = 'block';
     }
 };
 window.toggleLanguage = (isEn) => {

@@ -12,7 +12,8 @@ export function initDashboard(appData, currentLang) {
 }
 
 export function updateCharts(appData, currentLang) {
-    const allItems = appData.reduce((acc, office) => acc.concat(office.inventory), []);
+    if (!appData || appData.length === 0) return;
+    const allItems = appData.reduce((acc, office) => acc.concat(office.inventory || []), []);
     
     renderStatusChart(allItems, currentLang);
     renderTypeChart(allItems, currentLang);
@@ -100,12 +101,15 @@ function renderHealthChart(appData, lang) {
                 let totalChecks = 0;
                 let failChecks = 0;
                 Object.keys(allSections).forEach(cat => {
-                    Object.keys(allSections[cat]).forEach(sub => {
-                        totalChecks++;
-                        if (allSections[cat][sub] === false) failChecks++;
-                    });
+                    if (allSections[cat] && typeof allSections[cat] === 'object') {
+                        Object.keys(allSections[cat]).forEach(sub => {
+                            totalChecks++;
+                            if (allSections[cat][sub] === false) failChecks++;
+                        });
+                    }
                 });
                 if (totalChecks > 0) itemScore = ((totalChecks - failChecks) / totalChecks) * 100;
+                else itemScore = 100; // No issues found or no checks done
             }
             totalPoints += itemScore;
         });
