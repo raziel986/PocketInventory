@@ -94,43 +94,45 @@
         </div>
     </div>
 
-    <div class="container">
-        <!-- Contenedor Lateral (Sidebar) -->
-        <div class="sidebar">
-
-            <!-- Barra Lateral / Brand -->
-            <div class="brand-card glass-card">
-                <div
-                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-                    <div class="brand" style="display: flex; gap: 10px;">
-                        <div>
-                            <img src="img/logo.png" alt="PocketITCheck Logo" class="w-24 h-24 mb-4">
-                        </div>
-                        <div id="company">
-                            <div>
-                                <span style="color: var(--primary)">Pocket</span><span>IT</span><span
-                                    style="color: #1b8b2d">Check</span>
-                            </div>
-                            <span data-i18n="appSlogan"
-                                style="font-weight: bold; font-size: .5rem; color: #303030;margin-top: -10px; display: block;">
-                                Inventory | Diagnostics | Maintenance | Repairs </span>
-                        </div>
+    <div class="container" style="max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Barra Lateral / Brand -->
+        <div class="brand-card glass-card">
+            <div
+                style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                <div class="brand" style="display: flex; gap: 10px;">
+                    <div>
+                        <img src="img/logo.png" alt="PocketITCheck Logo" class="w-24 h-24 mb-4">
                     </div>
-                    <div class="lang-toggle-container">
-                        <label class="switch">
-                            <input type="checkbox" id="lang-toggle" onchange="toggleLanguage(this.checked)">
-                            <span class="slider">
-                                <span class="slider-text slider-text-es" id="lang-es">ES</span>
-                                <span class="slider-text slider-text-en" id="lang-en">EN</span>
-                            </span>
-                        </label>
+                    <div id="company">
+                        <div>
+                            <span style="color: var(--primary)">Pocket</span><span>IT</span><span
+                                style="color: #1b8b2d">Check</span>
+                        </div>
+                        <span data-i18n="appSlogan"
+                            style="font-weight: bold; font-size: .5rem; color: #303030;margin-top: -10px; display: block;">
+                            Inventory | Diagnostics | Maintenance | Repairs </span>
                     </div>
                 </div>
+                <div class="lang-toggle-container">
+                    <label class="switch">
+                        <input type="checkbox" id="lang-toggle" onchange="toggleLanguage(this.checked)">
+                        <span class="slider">
+                            <span class="slider-text slider-text-es" id="lang-es">ES</span>
+                            <span class="slider-text slider-text-en" id="lang-en">EN</span>
+                        </span>
+                    </label>
+                </div>
             </div>
+        </div>
 
-            <!-- VISTA: Formularios Nueva Oficina -->
-            <div class="office-section glass-card" id="viewCreateOfficeSidebar">
-                <h2 data-i18n="newOffice" style="font-size: 1.1rem; margin-bottom: 1.5rem;">🏢 Nueva Oficina</h2>
+        <!-- VISTA: Formularios Nueva Oficina -->
+        <div class="office-section glass-card" id="viewCreateOfficeSidebar" style="display: none;">
+            <button type="button" class="btn btn-clear" onclick="hideAddOfficeForm()"
+                style="margin-top:0; margin-bottom: 1.5rem; background: #f1f5f9; border: 1px solid #cbd5e1; color: #334155; width: fit-content;"
+                data-i18n="backToOffices">
+                ⬅️ Volver a Oficinas
+            </button>
+            <h2 data-i18n="newOffice" style="font-size: 1.1rem; margin-bottom: 1.5rem;">🏢 Nueva Oficina</h2>
                 <form id="officeForm">
                     <div class="form-group">
                         <label data-i18n="companyLabel">Nombre Empresa / Cliente *</label>
@@ -193,10 +195,10 @@
 
             <!-- VISTA: Formulario Nuevo Equipo (Se oculta al inicio) -->
             <div class="input-section glass-card" id="viewAddEquipmentSidebar" style="display: none;">
-                <button type="button" class="btn btn-clear" onclick="goBackToOffices()"
-                    style="margin-top:0; margin-bottom: 1.5rem; background: #f1f5f9; border: 1px solid #cbd5e1; color: #334155;"
-                    data-i18n="backToOffices">
-                    ⬅️ Volver a Oficinas
+                <button type="button" class="btn btn-clear" onclick="hideAddEquipmentForm()"
+                    style="margin-top:0; margin-bottom: 1.5rem; background: #f1f5f9; border: 1px solid #cbd5e1; color: #334155; width: fit-content;"
+                    data-i18n="cancelEdit">
+                    ⬅️ Cancelar / Volver
                 </button>
                 <div id="activeOfficeSummary"
                     style="font-size: 0.85rem; padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 1.5rem; line-height: 1.5;">
@@ -291,18 +293,18 @@
                 </form>
             </div>
 
-        </div> <!-- Cierre del Sidebar -->
-
-
         <!-- CUERPO DERECHO: VISTA Lista de Oficinas -->
         <div class="output-section glass-card" id="viewOfficesTable">
             <h2
                 style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
                 <span data-i18n="officeManagerSub">📋 Gestor de Oficinas y Clientes</span>
-                <span id="officeCountBadge"
-                    style="font-size: 0.9rem; background: #e0e7ff; color: #4338ca; padding: 0.25rem 0.75rem; border-radius: 9999px;">
-                    0 oficinas
-                </span>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <span id="officeCountBadge"
+                        style="font-size: 0.9rem; background: #e0e7ff; color: #4338ca; padding: 0.25rem 0.75rem; border-radius: 9999px;">
+                        0 oficinas
+                    </span>
+                    <button class="btn btn-submit" style="padding: 0.4rem 0.8rem; min-height: 0; font-size: 0.9rem;" onclick="showAddOfficeForm()" data-i18n="newOffice">+ Nueva Oficina</button>
+                </div>
             </h2>
             <div class="table-controls">
                 <div class="table-control-group">
@@ -341,6 +343,11 @@
 
         <!-- CUERPO DERECHO: VISTA Tabla de Inventario de la Oficina -->
         <div class="output-section glass-card" id="viewInventoryTable" style="display: none;">
+            <button type="button" class="btn btn-clear" onclick="goBackToOffices()"
+                style="margin-top:0; margin-bottom: 1.5rem; background: #f1f5f9; border: 1px solid #cbd5e1; color: #334155; width: fit-content;"
+                data-i18n="backToOffices">
+                ⬅️ Volver a Oficinas
+            </button>
             <!-- Encabezado exclusivo de Impresión -->
             <div class="header-print">
                 <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
@@ -374,9 +381,10 @@
 
             <h2
                 style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
                     <span data-i18n="newEquipment">💻 Inventario de Equipos</span>
-                    <span id="itemCount" class="badge-count">0 items</span>
+                    <span id="itemCount" class="badge-count" style="margin-right: 10px;">0 items</span>
+                    <button class="btn btn-submit" style="padding: 0.4rem 0.8rem; min-height: 0; font-size: 0.9rem;" onclick="showAddEquipmentForm()" data-i18n="addEquipment">+ Nuevo Equipo</button>
                 </div>
                 <div style="display: flex; gap: 0.5rem;">
                     <button class="icon-btn icon-btn-info" title="Plan Maestro de Mantenimiento"
