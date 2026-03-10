@@ -11,52 +11,51 @@ import { DIAG_SCHEMA } from './js/diagnostic.js';
 
 // --- Components ---
 
-const Sidebar = ({ view, setView, activeOffice, onBack }) => {
+const Sidebar = ({ view, setView, activeOffice, onBack, lang, onToggleLang, onSaveOffice, onAddEquipment }) => {
     return (
-        <div className="sidebar p-3">
-             <div className="brand-card glass-card mb-4">
-                <div className="d-flex justify-content-between align-items-start">
-                    <div className="brand d-flex gap-2">
-                        <img src="img/logo.png" alt="Logo" className="w-24 h-24 mb-4" />
-                        <div>
-                            <div className="h4 m-0"><span className="text-primary">Pocket</span>IT<span className="text-success">Check</span></div>
-                            <small className="text-muted fw-bold" style={{fontSize: '0.6rem'}}>Inventory | Diagnostics | Maintenance</small>
-                        </div>
+        <div className="sidebar p-3 bg-white border-end shadow-sm" style={{width: '300px'}}>
+            <div className="brand-card glass-card mb-4 p-3 border rounded text-center shadow-sm position-relative">
+                <div className="position-absolute top-0 end-0 p-2">
+                    <div className="form-check form-switch px-0">
+                        <input className="form-check-input ms-0" type="checkbox" checked={lang === 'en'} onChange={onToggleLang} style={{cursor: 'pointer'}} />
+                        <div className="small fw-bold">{lang.toUpperCase()}</div>
                     </div>
                 </div>
+                <img src="img/logo.png" className="w-25 mb-2" alt="Logo" />
+                <h4 className="m-0 text-primary fw-bold">PocketITCheck</h4>
+                <small className="text-muted" style={{fontSize: '0.65rem'}}>{t(lang, 'appSlogan')}</small>
             </div>
 
             {view === 'offices' ? (
-                <div className="glass-card p-3">
-                    <h5 className="mb-3">🏢 Nueva Oficina</h5>
-                    {/* Office Form would go here */}
-                    <p className="text-muted small">Cargando formulario...</p>
+                <div className="glass-card p-3 border rounded shadow-sm">
+                    <h5 className="mb-3 small fw-bold">🏢 {t(lang, 'newOffice')}</h5>
+                    <OfficeForm lang={lang} onSave={onSaveOffice} />
                 </div>
             ) : (
-                <div className="glass-card p-3">
-                    <button className="btn btn-outline-secondary btn-sm mb-3 w-100" onClick={onBack}>
-                        <i className="lucide-arrow-left"></i> Volver
+                <div className="glass-card p-3 border rounded shadow-sm">
+                    <button className="btn btn-outline-secondary btn-sm mb-3 w-100 fw-bold" onClick={onBack}>
+                        ⬅ {t(lang, 'backToOffices')}
                     </button>
                     {activeOffice && (
-                        <div className="office-summary p-2 bg-light rounded small mb-3">
-                            <div className="fw-bold">🏢 {activeOffice.company}</div>
-                            <div>📍 {activeOffice.location}</div>
+                        <div className="office-summary p-2 bg-light rounded small mb-3 border">
+                            <div className="fw-bold text-truncate">🏢 {activeOffice.company}</div>
+                            <div className="text-muted text-truncate">📍 {activeOffice.location}</div>
                         </div>
                     )}
-                    <h5 className="mb-3">💻 Nuevo Equipo</h5>
-                    {/* Equipment Form would go here */}
+                    <h5 className="mb-3 small fw-bold">💻 {t(lang, 'newEquipment')}</h5>
+                    <EquipmentForm lang={lang} activeOffice={activeOffice} onSave={onAddEquipment} />
                 </div>
             )}
         </div>
     );
 };
 
-const DiagnosticSuite = ({ item, onSave, onCancel }) => {
+const DiagnosticSuite = ({ item, onSave, onCancel, lang }) => {
     const [diagData, setDiagData] = useState(item.diagnostics || { hardware: {}, software: {} });
     const [notes, setNotes] = useState(item.diagNotes || '');
 
     const toggleCheck = (group, id) => {
-        const pass = diagData[group][id] !== false; // default true if undefined
+        const pass = diagData[group][id] !== false;
         setDiagData({
             ...diagData,
             [group]: { ...diagData[group], [id]: !pass }
@@ -66,29 +65,29 @@ const DiagnosticSuite = ({ item, onSave, onCancel }) => {
     return (
         <div className="diagnostic-container">
             <div className="d-flex justify-content-between align-items-center mb-4">
-                <h3 className="text-primary m-0">🩺 Diagnóstico: {item.assetTag}</h3>
-                <button className="btn btn-outline-danger btn-sm" onClick={onCancel}>Cerrar</button>
+                <h3 className="text-primary m-0 fw-bold">🩺 {t(lang, 'integratedDiag')}: {item.assetTag}</h3>
+                <button className="btn btn-outline-danger btn-sm px-3" onClick={onCancel}>{t(lang, 'cancelEdit') || 'X'}</button>
             </div>
             
             <div className="row g-3">
                 {Object.keys(DIAG_SCHEMA).map(groupKey => (
                     <div className="col-12 col-xl-6" key={groupKey}>
-                        <div className="diag-section glass-card h-100 p-3">
-                            <h5 className="diag-group-title mb-3">
-                                {DIAG_SCHEMA[groupKey].icon} {DIAG_SCHEMA[groupKey].title.toUpperCase()}
+                        <div className="diag-section glass-card h-100 p-3 shadow-sm border rounded">
+                            <h5 className="diag-group-title mb-3 fw-bold text-dark">
+                                {DIAG_SCHEMA[groupKey].icon} {t(lang, groupKey).toUpperCase()}
                             </h5>
                             <div className="diag-cards-grid d-flex flex-column gap-2">
                                 {DIAG_SCHEMA[groupKey].sections.map(section => {
                                     const isFail = diagData[groupKey][section.id] === false;
                                     return (
-                                        <div className={`diag-card p-2 border rounded d-flex align-items-center gap-3 ${isFail ? 'bg-danger-subtle' : 'bg-success-subtle'}`} key={section.id}>
+                                        <div className={`diag-card p-2 border rounded d-flex align-items-center gap-3 transition-all ${isFail ? 'bg-danger-subtle border-danger' : 'bg-success-subtle border-success'}`} key={section.id}>
                                             <span className="fs-4">{section.icon}</span>
                                             <div className="flex-grow-1">
-                                                <div className="fw-bold small">{section.title}</div>
-                                                <div className="text-muted" style={{fontSize: '0.65rem'}}>{section.standards.join(' | ')}</div>
+                                                <div className="fw-bold small">{t(lang, section.id) || section.title}</div>
+                                                <div className="text-muted" style={{fontSize: '0.6rem'}}>{section.standards.join(' | ')}</div>
                                             </div>
                                             <div className="form-check form-switch m-0">
-                                                <input className="form-check-input" type="checkbox" checked={!isFail} onChange={() => toggleCheck(groupKey, section.id)} />
+                                                <input className="form-check-input cursor-pointer" type="checkbox" checked={!isFail} onChange={() => toggleCheck(groupKey, section.id)} />
                                             </div>
                                         </div>
                                     );
@@ -100,12 +99,12 @@ const DiagnosticSuite = ({ item, onSave, onCancel }) => {
             </div>
 
             <div className="mt-4">
-                <label className="fw-bold mb-2">📝 Observaciones:</label>
-                <textarea className="form-control" value={notes} onChange={e => setNotes(e.target.value)} rows="3"></textarea>
+                <label className="fw-bold mb-2 small">{t(lang, 'observationsLabel') || 'Observaciones'}:</label>
+                <textarea className="form-control shadow-sm" value={notes} onChange={e => setNotes(e.target.value)} rows="3"></textarea>
             </div>
 
-            <button className="btn btn-primary w-100 mt-4 py-2 fw-bold" onClick={() => onSave(diagData, notes)}>
-                💾 Guardar Diagnóstico y Actualizar Activo
+            <button className="btn btn-primary w-100 mt-4 py-3 fw-bold shadow-sm" onClick={() => onSave(diagData, notes)}>
+                💾 {t(lang, 'saveChanges')}
             </button>
         </div>
     );
@@ -121,13 +120,13 @@ const MainContent = ({ view, offices, activeOffice, onSelectOffice, onOpenDiag, 
             {view === 'offices' ? (
                 <div className="glass-card p-4 shadow-sm border rounded bg-white">
                     <h2 className="mb-4 d-flex justify-content-between align-items-center">
-                        <span>📋 {t(lang, 'officeManagerSub')}</span>
-                        <span className="badge bg-indigo-100 text-primary rounded-pill small">{offices.length} {t(lang, 'officesCount')}</span>
+                        <span className="fw-bold">📋 {t(lang, 'officeManagerSub')}</span>
+                        <span className="badge bg-primary rounded-pill small">{offices.length} {t(lang, 'officesCount')}</span>
                     </h2>
                     <div className="table-responsive">
                         <table className="table table-hover align-middle border-top">
                             <thead className="table-light">
-                                <tr>
+                                <tr className="small text-muted text-uppercase">
                                     <th>{t(lang, 'companyLabel')}</th>
                                     <th>{t(lang, 'locationLabel')}</th>
                                     <th className="text-center">{t(lang, 'equips')}</th>
@@ -144,13 +143,13 @@ const MainContent = ({ view, offices, activeOffice, onSelectOffice, onOpenDiag, 
                                                 <div className="fw-bold text-primary">{o.company}</div>
                                                 <small className="text-muted">{o.depto}</small>
                                             </td>
-                                            <td>{o.location}</td>
+                                            <td className="small">{o.location}</td>
                                             <td className="text-center">
-                                                <span className="badge bg-primary rounded-pill">{o.inventory.length}</span>
+                                                <span className="badge bg-indigo-100 text-indigo-700 rounded-pill">{o.inventory.length}</span>
                                             </td>
                                             <td className="text-center">
-                                                <button className="btn btn-sm btn-info text-white shadow-sm" onClick={() => onSelectOffice(o.id)}>
-                                                    📂 {t(lang, 'open') || 'Open'}
+                                                <button className="btn btn-sm btn-info text-white shadow-sm px-3" onClick={() => onSelectOffice(o.id)}>
+                                                    📂 {t(lang, 'open')}
                                                 </button>
                                             </td>
                                         </tr>
@@ -163,16 +162,16 @@ const MainContent = ({ view, offices, activeOffice, onSelectOffice, onOpenDiag, 
             ) : (
                 <div className="glass-card p-4 shadow-sm border rounded bg-white">
                     <div className="d-flex justify-content-between align-items-center mb-4">
-                        <h2 className="m-0 text-dark">💻 {activeOffice?.company}</h2>
+                        <h2 className="m-0 fw-bold text-dark">💻 {activeOffice?.company}</h2>
                         <div className="d-flex gap-2">
-                             <button className="btn btn-sm btn-outline-success" onClick={() => alert('Exporting PDF...')}>📄 PDF</button>
-                             <span className="badge bg-secondary p-2">{activeOffice?.inventory.length} {t(lang, 'items')}</span>
+                             <button className="btn btn-sm btn-outline-success shadow-sm px-3 fw-bold" onClick={() => alert('Exporting PDF...')}>📄 PDF</button>
+                             <span className="badge bg-secondary p-2 rounded">{activeOffice?.inventory.length} {t(lang, 'items')}</span>
                         </div>
                     </div>
                     <div className="table-responsive">
                         <table className="table table-hover align-middle border-top">
                             <thead className="table-light">
-                                <tr>
+                                <tr className="small text-muted text-uppercase">
                                     <th>{t(lang, 'assetTagLabel')}</th>
                                     <th>{t(lang, 'infoGeneral')}</th>
                                     <th className="text-center">{t(lang, 'statusLabel')}</th>
@@ -182,26 +181,26 @@ const MainContent = ({ view, offices, activeOffice, onSelectOffice, onOpenDiag, 
                             </thead>
                             <tbody>
                                 {activeOffice?.inventory.map((item, idx) => {
-                                    const isDiagDone = item.diagnostics && Object.keys(item.diagnostics.hardware).length > 0;
+                                    const isDiagDone = item.diagnostics && Object.keys(item.diagnostics.hardware || {}).length > 0;
                                     return (
                                         <tr key={idx}>
-                                            <td><code className="fw-bold text-dark bg-light px-2 py-1 rounded border">{item.assetTag}</code></td>
+                                            <td><code className="fw-bold text-dark bg-light px-2 py-1 rounded border small">{item.assetTag}</code></td>
                                             <td>
-                                                <div className="fw-bold">{item.model}</div>
-                                                <small className="text-muted">{item.serial}</small>
+                                                <div className="fw-bold small">{item.model}</div>
+                                                <small className="text-muted" style={{fontSize: '0.7rem'}}>S/N: {item.serial}</small>
                                             </td>
                                             <td className="text-center">
-                                                <span className={`badge ${item.status === 'Activo' ? 'bg-success' : 'bg-warning text-dark'}`}>
+                                                <span className={`badge small ${item.status === 'Activo' ? 'bg-success' : 'bg-warning text-dark'}`}>
                                                     {t(lang, item.status) || item.status}
                                                 </span>
                                             </td>
                                             <td className="text-center">
-                                                <button className={`btn btn-sm ${isDiagDone ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => onOpenDiag(idx)}>
-                                                    {isDiagDone ? '✅' : '🩺'} {t(lang, 'integratedDiag')}
+                                                <button className={`btn btn-sm shadow-sm ${isDiagDone ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => onOpenDiag(idx)}>
+                                                    {isDiagDone ? '✅' : '🩺'} {t(lang, 'review') || 'Revisar'}
                                                 </button>
                                             </td>
                                             <td className="text-center">
-                                                <button className="btn btn-sm btn-link text-danger">🗑️</button>
+                                                <button className="btn btn-sm btn-link text-danger p-0" title={t(lang, 'delete')}>🗑️</button>
                                             </td>
                                         </tr>
                                     );
@@ -215,20 +214,20 @@ const MainContent = ({ view, offices, activeOffice, onSelectOffice, onOpenDiag, 
     );
 };
 
-const MobileNav = ({ view, setView }) => {
+const MobileNav = ({ view, setView, lang }) => {
     return (
-        <nav className="mobile-nav fixed-bottom d-md-none bg-white border-top d-flex justify-content-around p-2">
-            <button className={`nav-item border-0 bg-transparent ${view === 'offices' ? 'active' : ''}`} onClick={() => setView('offices')}>
-                <span className="nav-icon d-block">🏢</span>
-                <small className="nav-label">Oficinas</small>
+        <nav className="mobile-nav fixed-bottom d-md-none bg-white border-top d-flex justify-content-around p-2 shadow">
+            <button className={`nav-item border-0 bg-transparent flex-column d-flex align-items-center ${view === 'offices' ? 'text-primary' : 'text-muted'}`} onClick={() => setView('offices')}>
+                <span className="fs-4">🏢</span>
+                <small style={{fontSize: '0.6rem'}} className="fw-bold">{t(lang, 'offices') || 'Oficinas'}</small>
             </button>
-            <button className={`nav-item border-0 bg-transparent ${view === 'inventory' ? 'active' : ''}`} onClick={() => setView('inventory')}>
-                <span className="nav-icon d-block">💻</span>
-                <small className="nav-label">Equipos</small>
+            <button className={`nav-item border-0 bg-transparent flex-column d-flex align-items-center ${view === 'inventory' ? 'text-primary' : 'text-muted'}`} onClick={() => setView('inventory')}>
+                <span className="fs-4">💻</span>
+                <small style={{fontSize: '0.6rem'}} className="fw-bold">{t(lang, 'items') || 'Equipos'}</small>
             </button>
-            <button className={`nav-item border-0 bg-transparent ${view === 'diagnostic' ? 'active' : ''}`} onClick={() => setView('diagnostic')}>
-                <span className="nav-icon d-block">🩺</span>
-                <small className="nav-label">Diagnóstico</small>
+            <button className={`nav-item border-0 bg-transparent flex-column d-flex align-items-center ${view === 'diagnostic' ? 'text-primary' : 'text-muted'}`} onClick={() => setView('diagnostic')}>
+                <span className="fs-4">🩺</span>
+                <small style={{fontSize: '0.6rem'}} className="fw-bold">{t(lang, 'integratedDiag') || 'Diag'}</small>
             </button>
         </nav>
     );
@@ -236,7 +235,7 @@ const MobileNav = ({ view, setView }) => {
 
 // --- Forms ---
 
-const OfficeForm = ({ onSave }) => {
+const OfficeForm = ({ onSave, lang }) => {
     const [formData, setFormData] = useState({
         company: '', depto: '', location: '', auditor: '', auditorCompany: '', date: new Date().toISOString().split('T')[0], manager: '', managerTitle: ''
     });
@@ -248,21 +247,21 @@ const OfficeForm = ({ onSave }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="p-2">
+        <form onSubmit={handleSubmit} className="p-1">
             <div className="mb-2">
-                <label className="form-label small mb-1">Empresa *</label>
-                <input type="text" className="form-control form-control-sm" value={formData.company} onChange={e => setFormData({...formData, company: e.target.value})} required />
+                <label className="form-label small mb-1 fw-bold">{t(lang, 'companyLabel')}</label>
+                <input type="text" className="form-control form-control-sm shadow-sm" value={formData.company} onChange={e => setFormData({...formData, company: e.target.value})} required />
             </div>
             <div className="mb-2">
-                <label className="form-label small mb-1">Ubicación *</label>
-                <input type="text" className="form-control form-control-sm" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} required />
+                <label className="form-label small mb-1 fw-bold">{t(lang, 'locationLabel')}</label>
+                <input type="text" className="form-control form-control-sm shadow-sm" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} required />
             </div>
-            <button type="submit" className="btn btn-success btn-sm w-100 mt-2">Registrar Oficina</button>
+            <button type="submit" className="btn btn-success btn-sm w-100 mt-2 fw-bold shadow-sm">{t(lang, 'registerOffice')}</button>
         </form>
     );
 };
 
-const EquipmentForm = ({ activeOffice, onSave }) => {
+const EquipmentForm = ({ activeOffice, onSave, lang }) => {
     const [formData, setFormData] = useState({
         type: '', model: '', serial: '', assetTag: '', status: 'Activo', user: '', notes: ''
     });
@@ -274,25 +273,26 @@ const EquipmentForm = ({ activeOffice, onSave }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="p-2">
+        <form onSubmit={handleSubmit} className="p-1">
             <div className="mb-2">
-                <label className="form-label small mb-1">Categoría</label>
-                <select className="form-select form-select-sm" value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} required>
-                    <option value="">Seleccionar...</option>
+                <label className="form-label small mb-1 fw-bold">{t(lang, 'categoryLabel')}</label>
+                <select className="form-select form-select-sm shadow-sm" value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} required>
+                    <option value="">{t(lang, 'selectType') || '...'}</option>
                     <option value="Laptop">Laptop</option>
                     <option value="Desktop">Desktop</option>
                     <option value="Monitor">Monitor</option>
+                    <option value="Printer">Printer</option>
                 </select>
             </div>
             <div className="mb-2">
-                <label className="form-label small mb-1">Modelo</label>
-                <input type="text" className="form-control form-control-sm" value={formData.model} onChange={e => setFormData({...formData, model: e.target.value})} required />
+                <label className="form-label small mb-1 fw-bold">{t(lang, 'modelLabel')}</label>
+                <input type="text" className="form-control form-control-sm shadow-sm" value={formData.model} onChange={e => setFormData({...formData, model: e.target.value})} required />
             </div>
             <div className="mb-2">
-                <label className="form-label small mb-1">Asset Tag</label>
-                <input type="text" className="form-control form-control-sm" value={formData.assetTag} onChange={e => setFormData({...formData, assetTag: e.target.value})} required />
+                <label className="form-label small mb-1 fw-bold">{t(lang, 'assetTagLabel')}</label>
+                <input type="text" className="form-control form-control-sm shadow-sm" value={formData.assetTag} onChange={e => setFormData({...formData, assetTag: e.target.value})} required />
             </div>
-            <button type="submit" className="btn btn-primary btn-sm w-100 mt-2">Añadir Equipo</button>
+            <button type="submit" className="btn btn-primary btn-sm w-100 mt-2 fw-bold shadow-sm">{t(lang, 'addEquipment')}</button>
         </form>
     );
 };
@@ -329,16 +329,13 @@ const App = () => {
         Swal.fire({ title: t(lang, 'officeSaved') || 'Guardado', icon: 'success', timer: 1000, showConfirmButton: false });
     };
 
-    // ... updated render to use lang and toggle ...
-    // Note: I will update the components below to use the t function
-
     const handleAddEquipment = async (item) => {
         const office = offices.find(o => o.id === activeOfficeId);
         if (!office) return;
         const updatedOffice = { ...office, inventory: [...office.inventory, item] };
         await saveOffice(updatedOffice);
         setOffices(offices.map(o => o.id === activeOfficeId ? updatedOffice : o));
-        Swal.fire({ title: 'Equipo Añadido', icon: 'success', timer: 1000, showConfirmButton: false });
+        Swal.fire({ title: t(lang, 'itemAdded') || 'Añadido', icon: 'success', timer: 1000, showConfirmButton: false });
     };
 
     const handleSaveDiag = async (diagData, notes) => {
@@ -352,7 +349,7 @@ const App = () => {
         await saveOffice(updatedOffice);
         setOffices(offices.map(o => o.id === activeOfficeId ? updatedOffice : o));
         
-        Swal.fire({ title: 'Diagnóstico Guardado', icon: 'success', timer: 1000, showConfirmButton: false });
+        Swal.fire({ title: t(lang, 'diagSaved') || 'Guardado', icon: 'success', timer: 1000, showConfirmButton: false });
         setView('inventory');
         setActiveEquipIndex(null);
     };
@@ -364,43 +361,40 @@ const App = () => {
 
     return (
         <div className="d-flex flex-column flex-md-row min-vh-100 bg-light">
-            {/* Sidebar Oculto en vista de Diagnóstico para enfoque total */}
+            {/* Sidebar with localization support */}
             {view !== 'diagnostic' && (
-                <div className="sidebar p-3 bg-white border-end shadow-sm" style={{width: '300px'}}>
-                    <div className="brand-card glass-card mb-4 p-3 border rounded text-center shadow-sm">
-                        <img src="img/logo.png" className="w-25 mb-2" alt="Logo" />
-                        <h4 className="m-0 text-primary fw-bold">PocketITCheck</h4>
-                        <small className="text-muted">Inventory & Standard Audit</small>
-                    </div>
-                    {view === 'offices' ? (
-                        <div className="glass-card"><OfficeForm onSave={handleSaveOffice} /></div>
-                    ) : (
-                        <div>
-                            <button className="btn btn-sm btn-outline-secondary mb-3 w-100 py-2" onClick={() => setView('offices')}>⬅ Volver a Oficinas</button>
-                            <div className="glass-card shadow-sm"><EquipmentForm activeOffice={activeOffice} onSave={handleAddEquipment} /></div>
-                        </div>
-                    )}
-                </div>
+                <Sidebar 
+                    view={view} 
+                    setView={setView} 
+                    activeOffice={activeOffice} 
+                    onBack={() => setView('offices')}
+                    lang={lang}
+                    onToggleLang={toggleLang}
+                    onSaveOffice={handleSaveOffice}
+                    onAddEquipment={handleAddEquipment}
+                />
             )}
             
-            <main className="flex-grow-1 overflow-auto p-4">
+            <main className="flex-grow-1 overflow-auto p-4 mb-5 mb-md-0">
                 {view === 'diagnostic' ? (
                     <DiagnosticSuite 
                         item={activeEquip} 
                         onSave={handleSaveDiag} 
                         onCancel={() => { setView('inventory'); setActiveEquipIndex(null); }} 
+                        lang={lang}
                     />
                 ) : (
                     <MainContent 
                         view={view} 
                         offices={offices} 
                         activeOffice={activeOffice}
+                        lang={lang}
                         onSelectOffice={(id) => { setActiveOfficeId(id); setView('inventory'); }}
                         onOpenDiag={(idx) => { setActiveEquipIndex(idx); setView('diagnostic'); }}
                     />
                 )}
             </main>
-            <MobileNav view={view} setView={setView} />
+            <MobileNav view={view} setView={setView} lang={lang} />
         </div>
     );
 };
