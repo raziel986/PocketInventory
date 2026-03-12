@@ -4,7 +4,8 @@
 
 import { initDB, getAllOffices, saveOffice, deleteOffice, migrateFromLocalStorage } from './js/db.js';
 import { applyTranslations, updatePagination } from './js/ui.js';
-import { t } from './js/translations.js';
+import { t, tPdf } from './js/translations.js';
+import { getStatusColor, drawHeaderTypeA, drawHeaderTypeB, drawSubheader, drawModelSignatures, addModelPageNumbers } from './js/pdf_engine.js';
 
 // State
 let currentLang = localStorage.getItem('pocketITCheckLang') || 'es';
@@ -594,27 +595,212 @@ window.exportToCSV = () => {
 };
 
 window.exportToPDF = () => {
-    Swal.fire({
-        title: 'Exportar PDF',
-        text: 'La función de exportación a PDF se está restaurando. Por ahora usa la función de impresión del navegador.',
-        icon: 'info'
+    const o = appData.find(off => off.id === activeOfficeId);
+    if (!o || o.inventory.length === 0) return;
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+    const currentLang = localStorage.getItem('pocketITCheckLang') || 'es';
+
+    // 1. Header (Type A for Inventory)
+    const title = tPdf(currentLang, 'pdfInventoryTitle');
+    const rightLines = [
+        o.company || '-',
+        `${tPdf(currentLang, 'pdfDate')}: ${o.auditDate || new Date().toLocaleDateString()}`
+    ];
+    let y = drawHeaderTypeA(doc, title, [79, 70, 229], rightLines, currentLang);
+
+    // 2. Subheader (Office Info)
+    y = drawSubheader(doc, o, y + 5, currentLang);
+
+    // 3. Inventory Table
+    const tableData = o.inventory.map(item => [
+        item.assetTag || '-',
+        t(currentLang, item.type) || item.type,
+        item.model || '-',
+        item.serial || '-',
+        t(currentLang, item.status) || item.status,
+        item.user || '-'
+    ]);
+
+    doc.autoTable({
+        startY: y + 2,
+        head: [[
+            tPdf(currentLang, 'assetTagLabel'),
+            tPdf(currentLang, 'pdfCategory'),
+            tPdf(currentLang, 'pdfModel'),
+            tPdf(currentLang, 'serialLabel'),
+            tPdf(currentLang, 'pdfStatus'),
+            tPdf(currentLang, 'pdfUser')
+        ]],
+        body: tableData,
+        theme: 'grid',
+        headStyles: { fillColor: [79, 70, 229], textColor: 255, fontSize: 8, fontStyle: 'bold' },
+        bodyStyles: { fontSize: 7, textColor: [30, 41, 59] },
+        alternateRowStyles: { fillColor: [248, 250, 252] },
+        margin: { left: 14, right: 14 },
+        didDrawPage: (data) => {
+            // Footers and Page Numbers are added at the end
+        }
     });
+
+    // 4. Signatures
+    drawModelSignatures(doc, doc.lastAutoTable.finalY + 10, o, currentLang);
+
+    // 5. Page Numbers
+    addModelPageNumbers(doc, currentLang);
+
+    doc.save(`Inventory_${o.company}_${new Date().toISOString().split('T')[0]}.pdf`);
 };
 
 window.generateMasterMaintenancePlanPDF = () => {
-    Swal.fire({
-        title: 'Plan Maestro',
-        text: 'La generación del Plan Maestro de Mantenimiento se está configurando.',
-        icon: 'info'
+    const o = appData.find(off => off.id === activeOfficeId);
+    if (!o || o.inventory.length === 0) return;
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'l', unit: 'mm', format: 'a4' }); // Landscape for plan
+    const currentLang = localStorage.getItem('pocketITCheckLang') || 'es';
+
+    // 1. Filter failed items
+    const failedItems = o.inventory.map(item => {
+        const issues = [];
+        const actions = [];
+        if (item.diagnostics) {
+            ['hardware', 'software'].forEach(cat => {
+                Object.keys(item.diagnostics[cat] || {}).forEach(key => {
+                    if (item.diagnostics[cat][key] === false) {
+                        issues.push(`${t(currentLang, key)}`);
+                        actions.push(t(currentLang, `act_${key}`));
+                    }
+                });
+            });
+        }
+        return issues.length > 0 ? { ...item, issues, actions } : null;
+    }).filter(x => x !== null);
+
+    // 2. Stats & Header (Type B)
+    const stats = [
+        `${tPdf(currentLang, 'pdfSummaryBoxTitle')}`,
+        `${tPdf(currentLang, 'pdfTotalItems')}: ${o.inventory.length}`,
+        `${tPdf(currentLang, 'pdfSummaryActivos')}: ${failedItems.length} ${tPdf(currentLang, 'pdfPending')}`
+    ];
+    let y = drawHeaderTypeB(doc, tPdf(currentLang, 'pdfMasterPlanTitle'), o, stats, currentLang);
+    y = drawSubheader(doc, o, y + 5, currentLang);
+
+    // 3. Table
+    const tableData = failedItems.map(it => [
+        `${it.assetTag}\n${it.model}`,
+        t(currentLang, it.status),
+        `${t(currentLang, it.location || '-')}\n${it.user || '-'}`,
+        it.issues.join('\n• '),
+        it.actions.join('\n• ')
+    ]);
+
+    doc.autoTable({
+        startY: y + 2,
+        head: [[
+            tPdf(currentLang, 'pdfCategory') + '/' + tPdf(currentLang, 'pdfModel'),
+            tPdf(currentLang, 'pdfEquipStatus'),
+            tPdf(currentLang, 'pdfLocAssign'),
+            tPdf(currentLang, 'pdfProbs'),
+            tPdf(currentLang, 'pdfReqActions')
+        ]],
+        body: tableData,
+        theme: 'grid',
+        headStyles: { fillColor: [5, 150, 105], fontSize: 8 },
+        columnStyles: {
+            0: { cellWidth: 35 },
+            1: { cellWidth: 20 },
+            2: { cellWidth: 40 },
+            3: { cellWidth: 60 },
+            4: { cellWidth: 100 }
+        },
+        styles: { fontSize: 7, cellPadding: 2, overflow: 'linebreak' }
     });
+
+    drawModelSignatures(doc, doc.lastAutoTable.finalY + 10, o, currentLang);
+    addModelPageNumbers(doc, currentLang);
+    doc.save(`MaintenancePlan_${o.company}_${new Date().toISOString().split('T')[0]}.pdf`);
 };
 
 window.generateResultsReportPDF = () => {
-    Swal.fire({
-        title: 'Informe de Resultados',
-        text: 'La generación del Informe de Resultados se está configurando.',
-        icon: 'info'
+    const o = appData.find(off => off.id === activeOfficeId);
+    if (!o || o.inventory.length === 0) return;
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'l', unit: 'mm', format: 'a4' });
+    const currentLang = localStorage.getItem('pocketITCheckLang') || 'es';
+
+    // 1. Process data for results
+    let totalIssues = 0;
+    let resolvedIssues = 0;
+
+    const resultsData = o.inventory.map(item => {
+        const diags = item.diagnostics || { hardware: {}, software: {} };
+        const result = item.maintenanceResult || { status: 'Pendiente', resolvedItems: [] };
+        
+        const originalProbs = [];
+        const actionsDone = [];
+
+        ['hardware', 'software'].forEach(cat => {
+            Object.keys(diags[cat]).forEach(key => {
+                if (diags[cat][key] === false) {
+                    totalIssues++;
+                    originalProbs.push(t(currentLang, key));
+                    if (result.resolvedItems && result.resolvedItems.includes(`${cat}:${key}`)) {
+                        resolvedIssues++;
+                        actionsDone.push(t(currentLang, key));
+                    }
+                }
+            });
+        });
+
+        return {
+            asset: `${item.assetTag}\n${item.model}`,
+            probs: originalProbs.join('\n• '),
+            actions: actionsDone.join('\n• '),
+            status: t(currentLang, result.status || 'Pendiente'),
+            notes: result.notes || '-'
+        };
     });
+
+    const completionRate = totalIssues > 0 ? Math.round((resolvedIssues / totalIssues) * 100) : 100;
+
+    // 2. Stats & Header
+    const stats = [
+        `${tPdf(currentLang, 'pdfSummaryBoxTitle')}`,
+        `${tPdf(currentLang, 'pdfTotalItems')}: ${o.inventory.length} | ${tPdf(currentLang, 'pdfResolvedCount')}: ${resolvedIssues}`,
+        `${tPdf(currentLang, 'pdfCompletionRate')}: ${completionRate}%`
+    ];
+    let y = drawHeaderTypeB(doc, tPdf(currentLang, 'pdfResultsTitle'), o, stats, currentLang);
+    y = drawSubheader(doc, o, y + 5, currentLang);
+
+    // 3. Table
+    doc.autoTable({
+        startY: y + 2,
+        head: [[
+            tPdf(currentLang, 'pdfCategory') + '/' + tPdf(currentLang, 'pdfModel'),
+            tPdf(currentLang, 'pdfOrigDiag'),
+            tPdf(currentLang, 'pdfDoneActs'),
+            tPdf(currentLang, 'pdfStatus'),
+            tPdf(currentLang, 'pdfNotes')
+        ]],
+        body: resultsData.map(r => [r.asset, r.probs, r.actions, r.status, r.notes]),
+        theme: 'grid',
+        headStyles: { fillColor: [5, 150, 105], fontSize: 8 },
+        columnStyles: {
+            0: { cellWidth: 35 },
+            1: { cellWidth: 55 },
+            2: { cellWidth: 55 },
+            3: { cellWidth: 25 },
+            4: { cellWidth: 80 }
+        },
+        styles: { fontSize: 7, cellPadding: 2, overflow: 'linebreak' }
+    });
+
+    drawModelSignatures(doc, doc.lastAutoTable.finalY + 10, o, currentLang);
+    addModelPageNumbers(doc, currentLang);
+    doc.save(`MaintenanceReport_${o.company}_${new Date().toISOString().split('T')[0]}.pdf`);
 };
 
 
