@@ -1018,29 +1018,33 @@ window.generateResultsReportPDF = () => {
     let resolvedIssues = 0;
 
     const resultsData = o.inventory.map(item => {
-        const diags = item.diagnostics || { hardware: {}, software: {} };
+        const diagObj = item.diagnostics || {};
         const result = item.maintenanceResult || { status: 'Pendiente', resolvedItems: [] };
         
         const originalProbs = [];
         const actionsDone = [];
 
-        ['hardware', 'software'].forEach(cat => {
-            Object.keys(diags[cat]).forEach(key => {
-                if (diags[cat][key] === false) {
-                    totalIssues++;
-                    originalProbs.push(t(currentLang, key));
-                    if (result.resolvedItems && result.resolvedItems.includes(`${cat}:${key}`)) {
-                        resolvedIssues++;
-                        actionsDone.push(t(currentLang, key));
+        DIAG_STRUCTURE.forEach(cat => {
+            cat.groups.forEach(group => {
+                group.items.forEach(it => {
+                    const isOk = (diagObj[cat.category] || {})[it.id] === true;
+                    if (!isOk) {
+                        totalIssues++;
+                        const label = `[${t(currentLang, cat.category)} / ${t(currentLang, group.key)}] ${t(currentLang, `desc_${it.id}`)}`;
+                        originalProbs.push(label);
+                        if (result.resolvedItems && result.resolvedItems.includes(`${cat.category}:${it.id}`)) {
+                            resolvedIssues++;
+                            actionsDone.push(label);
+                        }
                     }
-                }
+                });
             });
         });
 
         return {
             asset: `${item.assetTag}\n${item.model}`,
-            probs: originalProbs.join('\n• '),
-            actions: actionsDone.join('\n• '),
+            probs: originalProbs.length > 0 ? '• ' + originalProbs.join('\n• ') : '-',
+            actions: actionsDone.length > 0 ? '• ' + actionsDone.join('\n• ') : '-',
             status: t(currentLang, result.status || 'Pendiente'),
             notes: result.notes || '-'
         };
