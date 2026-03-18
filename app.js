@@ -830,8 +830,8 @@ window.generateMasterMaintenancePlanPDF = () => {
                 group.items.forEach(it => {
                     const isOk = (diagObj[cat.category] || {})[it.id] === true;
                     if (!isOk) {
-                        issues.push(`${t(currentLang, it.id)}`);
-                        actions.push(t(currentLang, `act_${it.id}`));
+                        issues.push(`${t(currentLang, it.label)}`);
+                        actions.push(`${t(currentLang, `act_${it.id}`)}`);
                     }
                 });
             });
@@ -853,8 +853,8 @@ window.generateMasterMaintenancePlanPDF = () => {
         `${it.assetTag}\n${it.model}`,
         t(currentLang, it.status),
         `${t(currentLang, it.location || '-')}\n${it.user || '-'}`,
-        it.issues.join('\n• '),
-        it.actions.join('\n• ')
+        it.issues.length > 0 ? '• ' + it.issues.join('\n• ') : '',
+        it.actions.length > 0 ? '• ' + it.actions.join('\n• ') : ''
     ]);
 
     doc.autoTable({
