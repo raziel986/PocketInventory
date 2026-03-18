@@ -20,6 +20,28 @@ let tableState = {
     equipment: { searchQuery: '', currentPage: 1, itemsPerPage: 10 }
 };
 
+const DIAG_STRUCTURE = [
+    {
+        category: 'hardware',
+        groups: [
+            { key: 'power', items: [{ id: 'cables', label: 'cables', desc: 'desc_cable' }, { id: 'battery', label: 'battery', desc: 'desc_bat' }] },
+            { key: 'storage', items: [{ id: 'smart', label: 'smart', desc: 'desc_smart' }, { id: 'speed', label: 'speed', desc: 'desc_speed' }] },
+            { key: 'ram', items: [{ id: 'test', label: 'test', desc: 'desc_test' }, { id: 'clean_ram', label: 'clean_ram', desc: 'desc_clean_ram' }] },
+            { key: 'temp', items: [{ id: 'paste', label: 'thermalPaste', desc: 'desc_paste' }, { id: 'fan', label: 'fans', desc: 'desc_fan' }] },
+            { key: 'clean', items: [{ id: 'int', label: 'internal', desc: 'desc_int' }, { id: 'ext', label: 'external', desc: 'desc_ext' }] }
+        ]
+    },
+    {
+        category: 'software',
+        groups: [
+            { key: 'os', items: [{ id: 'upd', label: 'updates', desc: 'desc_upd' }, { id: 'sfc', label: 'integrity', desc: 'desc_sfc' }] },
+            { key: 'security', items: [{ id: 'av', label: 'av', desc: 'desc_av' }, { id: 'fw', label: 'fw', desc: 'desc_fw' }] },
+            { key: 'performance', items: [{ id: 'drv', label: 'drv', desc: 'desc_drv' }, { id: 'bg', label: 'bg', desc: 'desc_bg' }] },
+            { key: 'license', items: [{ id: 'win', label: 'win', desc: 'desc_win' }, { id: 'off', label: 'off', desc: 'desc_off' }] }
+        ]
+    }
+];
+
 // DOM Cache
 // DOM Cache — populated inside DOMContentLoaded
 let dom = {};
@@ -429,26 +451,43 @@ window.openDiagnostic = (idx) => {
     const container = document.getElementById('diag-grid-container');
     if (container) {
         container.innerHTML = '';
-        const categories = [
-            { key: 'hardware', items: ['power', 'storage', 'ram', 'temp', 'clean'] },
-            { key: 'software', items: ['os', 'security', 'performance', 'license'] }
-        ];
-
-        categories.forEach(cat => {
+        DIAG_STRUCTURE.forEach(cat => {
             const section = document.createElement('div');
             section.className = 'diag-card';
-            section.innerHTML = `<h3 style="color: var(--primary); border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem; margin-bottom: 1rem;">${t(currentLang, cat.key)}</h3>`;
+            section.innerHTML = `<h3 style="color: var(--primary); border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem; margin-bottom: 1.5rem;">${t(currentLang, cat.category)}</h3>`;
             
-            cat.items.forEach(it => {
-                const isOk = item.diagnostics[cat.key][it] !== false;
-                const div = document.createElement('div');
-                div.className = 'diag-ok-container';
-                div.innerHTML = `
-                    <input type="checkbox" id="diag-${cat.key}-${it}" ${isOk ? 'checked' : ''} onchange="updateDiagState('${cat.key}', '${it}', this.checked)">
-                    <label for="diag-${cat.key}-${it}" style="margin-bottom:0; cursor:pointer;">
-                        <strong>${t(currentLang, it)}</strong>
-                    </label>`;
-                section.appendChild(div);
+            cat.groups.forEach(group => {
+                const groupDiv = document.createElement('div');
+                groupDiv.style.marginBottom = '1.5rem';
+                groupDiv.innerHTML = `<h4 style="margin: 0 0 0.8rem 0; color: #475569; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--primary);"></span> ${t(currentLang, group.key)}</h4>`;
+                
+                const itemsList = document.createElement('div');
+                itemsList.style.display = 'flex';
+                itemsList.style.flexDirection = 'column';
+                itemsList.style.gap = '0.75rem';
+                itemsList.style.paddingLeft = '1.2rem';
+
+                group.items.forEach(it => {
+                    const isOk = item.diagnostics[cat.category][it.id] !== false;
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'diag-item-row';
+                    itemDiv.style.display = 'flex';
+                    itemDiv.style.alignItems = 'flex-start';
+                    itemDiv.style.gap = '0.75rem';
+                    
+                    itemDiv.innerHTML = `
+                        <input type="checkbox" id="diag-${cat.category}-${it.id}" ${isOk ? 'checked' : ''} 
+                            style="width: 18px; height: 18px; margin-top: 3px; cursor: pointer;"
+                            onchange="updateDiagState('${cat.category}', '${it.id}', this.checked)">
+                        <label for="diag-${cat.category}-${it.id}" style="cursor: pointer; flex: 1;">
+                            <div style="font-weight: 600; font-size: 0.9rem; color: var(--text-main);">${t(currentLang, it.label)}</div>
+                            <div style="font-size: 0.8rem; color: #64748b; line-height: 1.3;">${t(currentLang, it.desc)}</div>
+                        </label>`;
+                    itemsList.appendChild(itemDiv);
+                });
+                groupDiv.appendChild(itemsList);
+                section.appendChild(groupDiv);
             });
             container.appendChild(section);
         });
@@ -515,22 +554,25 @@ window.openMaintenanceResult = (idx) => {
         container.innerHTML = '';
         if (item.diagnostics) {
             const failedItems = [];
-            ['hardware', 'software'].forEach(cat => {
-                Object.keys(item.diagnostics[cat] || {}).forEach(key => {
-                    if (item.diagnostics[cat][key] === false) {
-                        failedItems.push({ cat, key });
-                    }
+            DIAG_STRUCTURE.forEach(cat => {
+                cat.groups.forEach(group => {
+                    group.items.forEach(it => {
+                        if (item.diagnostics[cat.category][it.id] === false) {
+                            failedItems.push({ cat: cat.category, id: it.id, label: it.label });
+                        }
+                    });
                 });
             });
 
             failedItems.forEach(fi => {
-                const isResolved = (item.maintenanceResult.resolvedItems || []).includes(`${fi.cat}:${fi.key}`);
+                const isResolved = (item.maintenanceResult.resolvedItems || []).includes(`${fi.cat}:${fi.id}`);
                 const div = document.createElement('div');
                 div.className = 'diag-ok-container';
                 div.style.background = isResolved ? '#d1fae5' : '#fee2e2';
+                div.style.border = isResolved ? '1px solid #34d399' : '1px solid #fca5a5';
                 div.innerHTML = `
-                    <input type="checkbox" ${isResolved ? 'checked' : ''} onchange="toggleResolvedItem('${fi.cat}', '${fi.key}', this.checked)">
-                    <span style="font-size: 0.85rem;">${t(currentLang, fi.key)}</span>`;
+                    <input type="checkbox" ${isResolved ? 'checked' : ''} onchange="toggleResolvedItem('${fi.cat}', '${fi.id}', this.checked)">
+                    <span style="font-size: 0.85rem; font-weight: 500;">${t(currentLang, fi.label)}</span>`;
                 container.appendChild(div);
             });
         }
