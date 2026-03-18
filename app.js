@@ -3,7 +3,7 @@
  */
 
 import { initDB, getAllOffices, saveOffice, deleteOffice, migrateFromLocalStorage } from './js/db.js';
-import { applyTranslations, updatePagination } from './js/ui.js';
+import { applyTranslations, updatePagination, categoryFields } from './js/ui.js';
 import { t, tPdf } from './js/translations.js';
 import { getStatusColor, drawHeaderTypeA, drawHeaderTypeB, drawSubheader, drawModelSignatures, addModelPageNumbers } from './js/pdf_engine.js';
 
@@ -106,9 +106,18 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const o = appData.find(off => off.id === activeOfficeId);
             if (!o) return;
+            const specs = {};
+            const typeValue = document.getElementById('type').value;
+            if (categoryFields[typeValue]) {
+                categoryFields[typeValue].forEach(f => {
+                    const el = document.getElementById(f.id);
+                    if (el) specs[f.id] = el.value.trim();
+                });
+            }
+
             const item = {
-                type: document.getElementById('type').value,
-                typeValue: document.getElementById('type').value,
+                type: typeValue,
+                typeValue: typeValue,
                 model: document.getElementById('model').value.trim(),
                 serial: document.getElementById('serial').value.trim(),
                 assetTag: document.getElementById('assetTag').value.trim(),
@@ -118,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 warrantyDate: document.getElementById('warrantyDate').value,
                 user: document.getElementById('user').value.trim(),
                 notes: document.getElementById('notes').value.trim(),
+                specs: specs,
                 diagnostics: editingIndex >= 0 && o.inventory[editingIndex] ? o.inventory[editingIndex].diagnostics : null,
                 maintenanceResult: editingIndex >= 0 && o.inventory[editingIndex] ? o.inventory[editingIndex].maintenanceResult : null
             };
@@ -363,14 +373,20 @@ function renderTable() {
             tr.innerHTML = `
                 <td data-label="${t(currentLang,'assetTagLabel')}"><strong>${item.assetTag}</strong></td>
                 <td data-label="${t(currentLang,'infoGeneral')}">
-                    <span style="font-weight:500;">${item.type}</span><br/>
-                    <span style="color:#64748b;font-size:0.85rem;">${item.model}</span>
+                    <span style="font-weight:600; color:var(--primary);">${t(currentLang, item.type)}</span><br/>
+                    <span style="font-weight:500;">${item.model}</span>
+                    ${item.specs ? `<div style="font-size:0.75rem; color:#64748b; margin-top:4px; display:flex; flex-wrap:wrap; gap:4px;">
+                        ${Object.entries(item.specs).filter(([k,v]) => v).map(([k,v]) => `<span>• ${v}</span>`).join('')}
+                    </div>` : ''}
                 </td>
                 <td data-label="${t(currentLang,'statusAssignment')}">
                     <span style="display:inline-block;padding:2px 10px;border-radius:99px;background:${statusColor}22;color:${statusColor};font-weight:600;font-size:0.82rem;">${t(currentLang, item.status)}</span><br/>
                     <span style="font-size:0.82rem;color:#64748b;">${item.user}</span>
                 </td>
-                <td data-label="${t(currentLang,'techSpecs')}" style="font-size:0.82rem;color:#475569;">${item.serial || '-'}</td>
+                <td data-label="${t(currentLang,'techSpecs')}" style="font-size:0.82rem;color:#475569;">
+                    <span style="color:#94a3b8;">S/N:</span> ${item.serial || '-'}<br/>
+                    ${item.purchaseDate ? `<span style="color:#94a3b8; font-size:0.75rem;">📅 ${item.purchaseDate}</span>` : ''}
+                </td>
                 <td data-label="${t(currentLang,'actionsLabel')}" class="action-col">
                     <div class="action-icons">
                         <button class="icon-btn icon-btn-info" onclick="editEquipment(${item.originalIndex})" title="Editar">✏️</button>
@@ -406,6 +422,39 @@ window.editEquipment = (idx) => {
     dom.sidebarEquip.style.display = 'block';
     const title = document.getElementById('equipmentFormTitle');
     if (title) title.textContent = '📋 ' + t(currentLang, 'editEquipment');
+
+    window.updateDynamicFields(item.type);
+    if (item.specs) {
+        Object.keys(item.specs).forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = item.specs[id];
+        });
+    }
+};
+
+window.updateDynamicFields = (type) => {
+    if (!dom.dynamicContainer) return;
+    dom.dynamicContainer.innerHTML = '';
+    const fields = categoryFields[type];
+    if (!fields) return;
+
+    const grid = document.createElement('div');
+    grid.className = 'form-grid-3';
+    grid.style.gap = '1rem';
+    grid.style.marginTop = '1rem';
+    grid.style.paddingTop = '1rem';
+    grid.style.borderTop = '1px dashed #e2e8f0';
+
+    fields.forEach(f => {
+        const group = document.createElement('div');
+        group.className = 'form-group';
+        group.innerHTML = `
+            <label>${t(currentLang, f.i18nKey)}</label>
+            <input type="${f.type}" id="${f.id}" placeholder="${f.placeholder}">
+        `;
+        grid.appendChild(group);
+    });
+    dom.dynamicContainer.appendChild(grid);
 };
 
 window.deleteItem = async (idx) => {
@@ -439,7 +488,7 @@ window.openDiagnostic = (idx) => {
 
     const titleEl = document.getElementById('diag-title');
     const subtitleEl = document.getElementById('diag-subtitle');
-    if (titleEl) titleEl.textContent = `🩺 ${t(currentLang, 'diagTitle')}`;
+    if (titleEl) titleEl.textContent = ` ${t(currentLang, 'diagTitle')}`;
     if (subtitleEl) subtitleEl.textContent = `${item.assetTag} - ${item.model}`;
     
     if (!item.diagnostics) {

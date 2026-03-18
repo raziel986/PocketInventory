@@ -277,7 +277,10 @@ export const translations = {
         cpu: "Procesador (CPU)", mac: "Direcci\u00f3n MAC", size: "Tama\u00f1o (Pulgadas)",
         res: "Resoluci\u00f3n", panel: "Tipo de Panel", conn: "Conectividad",
         ip: "Direcci\u00f3n IP", consum: "Consumible", role: "Rol / Funci\u00f3n",
-        firm: "Firmware", ports: "Puertos"
+        firm: "Firmware", ports: "Puertos",
+        gpu: "Gráficos / GPU", screen: "Tipo de Pantalla",
+        storage_type: "Tipo de Disco", toner: "Tóner / Tinta",
+        volt: "Voltaje / Watts"
     },
     en: {
         appName: "PocketITCheck",
@@ -553,7 +556,10 @@ export const translations = {
         cpu: "Processor (CPU)", mac: "MAC Address", size: "Size (Inches)",
         res: "Resolution", panel: "Panel Type", conn: "Connectivity",
         ip: "IP Address", consum: "Consumable", role: "Role / Function",
-        firm: "Firmware", ports: "Ports"
+        firm: "Firmware", ports: "Ports",
+        gpu: "Graphics / GPU", screen: "Display Type",
+        storage_type: "Storage Type", toner: "Toner / Ink",
+        volt: "Voltage / Watts"
     }
 };
 
