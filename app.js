@@ -728,7 +728,7 @@ window.exportToPDF = () => {
     if (!o || o.inventory.length === 0) return;
 
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+    const doc = new jsPDF({ orientation: 'l', unit: 'mm', format: 'a4' });
     const currentLang = localStorage.getItem('pocketITCheckLang') || 'es';
 
     // 1. Calculate Stats
@@ -793,14 +793,14 @@ window.exportToPDF = () => {
         headStyles: { fillColor: [5, 150, 105], textColor: 255, fontSize: 8, fontStyle: 'bold' },
         bodyStyles: { fontSize: 7, textColor: [30, 41, 59] },
         columnStyles: {
-            0: { cellWidth: 20 },
-            1: { cellWidth: 20 },
-            2: { cellWidth: 35 },
-            3: { cellWidth: 35 },
+            0: { cellWidth: 25 },
+            1: { cellWidth: 22 },
+            2: { cellWidth: 45 },
+            3: { cellWidth: 50 },
             4: { cellWidth: 'auto' }
         },
         alternateRowStyles: { fillColor: [248, 250, 252] },
-        margin: { left: 14, right: 14 }
+        margin: { left: 10, right: 10 }
     });
 
     // 5. Signatures
