@@ -229,7 +229,7 @@ window.showAddEquipmentForm = () => {
     if (title) title.setAttribute('data-i18n', 'newEquipment');
     if (dom.cancelEditBtn) dom.cancelEditBtn.style.display = 'none';
     const subBtn = document.getElementById('submitBtnEquipment');
-    if (subBtn) subBtn.innerHTML = '➕ ' + t(currentLang, 'addEquipment');
+    if (subBtn) subBtn.innerHTML =  t(currentLang, 'addEquipment');
     // Show the form, hide inventory table
     dom.viewEquip.style.display = 'none';
     dom.sidebarEquip.style.display = 'block';
