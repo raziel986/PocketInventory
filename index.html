@@ -7,9 +7,11 @@
     <title>PocketITCheck - Inventory | Diagnostics | Maintenance | Repairs</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Iconos: Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
 
-    <!-- CSS Crítico para Splash Screen (Renderización Inmediata) -->
+    <!-- CSS Critico para Splash Screen (Renderizacion Inmediata) -->
     <style>
         #splash-screen {
             position: fixed;
@@ -60,21 +62,21 @@
     </style>
     <link rel="stylesheet" href="index.css">
 
-    <!-- Preloading de Librerías Críticas -->
+    <!-- Preloading de Librerias Criticas -->
     <link rel="preload" href="libs/jspdf.umd.min.js" as="script">
     <link rel="preload" href="libs/sweetalert2.all.min.js" as="script">
 
     <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#4f46e5">
+    <meta name="theme-color" content="#3525cd">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="PocketInv">
+    <meta name="apple-mobile-web-app-title" content="PocketITCheck">
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>">
     <link rel="apple-touch-icon" href="icon-512.png">
     <link rel="manifest" href="manifest.json">
 
-    <!-- Librerías para Generación de PDF (jsPDF y jsPDF-AutoTable) - LOCAL para mayor velocidad -->
+    <!-- Librerias para Generacion de PDF (jsPDF y jsPDF-AutoTable) - LOCAL para mayor velocidad -->
     <script src="libs/jspdf.umd.min.js" defer></script>
     <script src="libs/jspdf-autotable.min.js" defer></script>
     <script src="libs/sweetalert2.all.min.js" defer></script>
@@ -94,40 +96,30 @@
         </div>
     </div>
 
-    <div class="container" style="margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem;">
-        <!-- Barra Lateral / Brand -->
-        <div class="brand-card glass-card" style="padding: 1.25rem 2rem;">
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
-
-                <!-- Logo (izquierda) -->
-                <div style="flex-shrink: 0;">
-                    <img src="img/logo.png" alt="PocketITCheck Logo" style="height: 56px; width: auto; display: block;">
-                </div>
-
-                <!-- Título y eslogan (centro) -->
-                <div style="flex: 1; text-align: center;">
-                    <div style="font-size: 1.9rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.5px;">
-                        <span style="color: var(--primary)">Pocket</span><span style="color: #0f172a;">IT</span><span style="color: #1b8b2d;">Check</span>
-                    </div>
-                    <div data-i18n="appSlogan"
-                        style="font-size: 0.75rem; font-weight: 600; color: #64748b; margin-top: 4px; letter-spacing: 0.3px;">
-                        Inventario | Diagnóstico | Mantenimiento | Reparaciones
-                    </div>
-                </div>
-
-                <!-- Language Switch (derecha) -->
-                <div style="flex-shrink: 0;" class="lang-toggle-container">
-                    <label class="switch">
-                        <input type="checkbox" id="lang-toggle" onchange="toggleLanguage(this.checked)">
-                        <span class="slider">
-                            <span class="slider-text slider-text-es" id="lang-es">ES</span>
-                            <span class="slider-text slider-text-en" id="lang-en">EN</span>
-                        </span>
-                    </label>
-                </div>
-
+    <!-- TopAppBar Execution -->
+    <header class="top-app-bar">
+        <div class="header-left">
+            <button class="material-symbols-outlined menu-btn">menu</button>
+            <h1 class="app-title">Pocket<span class="highlight">IT</span>Check</h1>
+        </div>
+        <div class="header-right">
+            <div class="lang-toggle-container">
+                <label class="switch">
+                    <input type="checkbox" id="lang-toggle" onchange="toggleLanguage(this.checked)">
+                    <span class="slider">
+                        <span class="slider-text slider-text-es" id="lang-es">ES</span>
+                        <span class="slider-text slider-text-en" id="lang-en">EN</span>
+                    </span>
+                </label>
+            </div>
+            <div class="user-avatar">
+                <img src="img/logo.png" alt="PocketITCheck Logo">
             </div>
         </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
 
         <!-- VISTA: Formularios Nueva Oficina -->
         <div class="office-section glass-card" id="viewCreateOfficeSidebar" style="display: none;">
@@ -145,21 +137,21 @@
                                 data-i18n-placeholder="officeCompanyPl">
                         </div>
                         <div class="form-group">
-                            <label data-i18n="deptLabel">Departamento / Área</label>
+                            <label data-i18n="deptLabel">Departamento / Area</label>
                             <input type="text" id="officeDepto" required placeholder="Ej: Recursos Humanos"
                                 data-i18n-placeholder="officeDeptoPl">
                         </div>
                         <div class="form-group">
-                            <label data-i18n="locationLabel">Ubicación Física</label>
+                            <label data-i18n="locationLabel">Ubicacion Fisica</label>
                             <input type="text" id="officeLocation" required placeholder="Ej: Sede Central - Piso 4"
                                 data-i18n-placeholder="officeLocationPl">
                         </div>
                         <div class="form-group">
-                            <label data-i18n="auditDateLabel">Fecha de Auditoría</label>
+                            <label data-i18n="auditDateLabel">Fecha de Auditoria</label>
                             <input type="date" id="officeDate" required placeholder="aaaa-mm-dd">
                         </div>
                         <div class="form-group">
-                            <label data-i18n="auditorLabel">Auditor Técnico *</label>
+                            <label data-i18n="auditorLabel">Auditor Tecnico *</label>
                             <input type="text" id="officeAuditor" required placeholder="Ej: Carlos Noguera"
                                 data-i18n-placeholder="officeAuditorPl">
                         </div>
@@ -170,7 +162,7 @@
                         </div>
                         <div class="form-group">
                             <label data-i18n="managerLabel">Responsable / Gerente *</label>
-                            <input type="text" id="officeManager" required placeholder="Ej: Roberto Gómez"
+                            <input type="text" id="officeManager" required placeholder="Ej: Roberto Gomez"
                                 data-i18n-placeholder="officeManagerPl">
                         </div>
                         <div class="form-group">
@@ -182,12 +174,12 @@
                     <div class="button-group" style="flex-direction: row; flex-wrap: wrap; margin-top: 1.5rem;">
                         <button type="submit" class="btn btn-submit" id="submitBtnOffice" style="background:#10b981; flex: 1; min-width: 180px;"
                             data-i18n="registerOffice">
-                            🏢 Registrar Oficina
+                            📝 Registrar Oficina
                         </button>
                         <button type="button" class="btn btn-clear" id="cancelEditOfficeBtn"
                             style="display: none; flex: 1; min-width: 140px; background-color: #fca5a5; color: white; border:none;"
                             onclick="cancelEditOffice()" data-i18n="cancelEdit">
-                            ❌ Cancelar Edición
+                            ✕ Cancelar Edicion
                         </button>
                     </div>
                 </form>
@@ -202,7 +194,7 @@
                 </button>
                 <div id="activeOfficeSummary"
                     style="font-size: 0.85rem; padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 1.5rem; line-height: 1.5;">
-                    <!-- Detalles dinámicos -->
+                    <!-- Detalles dinamicos -->
                 </div>
 
                 <h2 id="equipmentFormTitle" style="font-size: 1.1rem; margin-bottom: 1.5rem;">
@@ -210,15 +202,15 @@
                 <form id="inventoryForm">
                     <div class="form-grid-3" style="gap: 1rem;">
                         <div class="form-group">
-                            <label data-i18n="categoryLabel">Categoría</label>
+                            <label data-i18n="categoryLabel">Categoria</label>
                             <select id="type" required onchange="updateDynamicFields(this.value)">
                                 <option value="" disabled selected data-i18n="selectType">Selecciona un tipo...
                                 </option>
-                                <option value="Laptop" data-i18n="Laptop">Laptop / Portátil</option>
+                                <option value="Laptop" data-i18n="Laptop">Laptop / Portatil</option>
                                 <option value="Desktop" data-i18n="Desktop">Desktop / PC de Escritorio</option>
                                 <option value="Monitor" data-i18n="Monitor">Monitor</option>
-                                <option value="Periférico" data-i18n="Periférico">Periférico (Teclado/Mouse)</option>
-                                <option value="Impresora" data-i18n="Impresora">Impresora / Escáner</option>
+                                <option value="Periferico" data-i18n="Periferico">Periferico (Teclado/Mouse)</option>
+                                <option value="Impresora" data-i18n="Impresora">Impresora / Escaner</option>
                                 <option value="Red" data-i18n="Red">Equipo de Red (Router/Switch)</option>
                             </select>
                         </div>
@@ -228,7 +220,7 @@
                                 data-i18n-placeholder="modelPl">
                         </div>
                         <div class="form-group">
-                            <label data-i18n="serialLabel">Número de Serie (S/N)</label>
+                            <label data-i18n="serialLabel">Numero de Serie (S/N)</label>
                             <input type="text" id="serial" required placeholder="S/N o Service Tag"
                                 data-i18n-placeholder="serialPl">
                         </div>
@@ -241,15 +233,15 @@
                             <label data-i18n="statusLabel">Estado del Activo *</label>
                             <select id="status" required>
                                 <option value="Activo" selected data-i18n="Activo">Activo / En Uso</option>
-                                <option value="Stock" data-i18n="Stock">En Stock / Almacén</option>
-                                <option value="Reparación" data-i18n="Reparación">En Reparación</option>
+                                <option value="Stock" data-i18n="Stock">En Stock / Almacen</option>
+                                <option value="Reparacion" data-i18n="Reparacion">En Reparacion</option>
                                 <option value="Baja" data-i18n="Baja">Dado de Baja / Desechado</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label data-i18n="warrantyCover">¿Cobertura de Garantía Vigente?</label>
+                            <label data-i18n="warrantyCover">?Cobertura de Garantia Vigente?</label>
                             <select id="hasWarranty" onchange="toggleDates()">
-                                <option value="Sí">Sí</option>
+                                <option value="Si">Si</option>
                                 <option value="No" selected>No</option>
                             </select>
                         </div>
@@ -258,17 +250,17 @@
                             <input type="date" id="purchaseDate" placeholder="aaaa-mm-dd">
                         </div>
                         <div class="form-group" id="warrantyDateContainer" style="display: none;">
-                            <label data-i18n="warrantyUntilLabel">Garantía Hasta</label>
+                            <label data-i18n="warrantyUntilLabel">Garantia Hasta</label>
                             <input type="date" id="warrantyDate" placeholder="aaaa-mm-dd">
                         </div>
                         <div class="form-group">
-                            <label data-i18n="assignmentLabel">Asignación (Usuario o Ubicación)</label>
-                            <input type="text" id="user" required placeholder="Ej: Juan Pérez / Sala Juntas A"
+                            <label data-i18n="assignmentLabel">Asignacion (Usuario o Ubicacion)</label>
+                            <input type="text" id="user" required placeholder="Ej: Juan Perez / Sala Juntas A"
                                 data-i18n-placeholder="userPl">
                         </div>
                     </div>
 
-                    <!-- Contenedor dinámico según categoría -->
+                    <!-- Contenedor dinamico segun categoria -->
                     <div id="dynamicFieldsContainer" style="margin-top: 0.5rem;"></div>
 
                     <div class="form-group" style="margin-top: 1rem;">
@@ -277,7 +269,7 @@
                             data-i18n-placeholder="notesPl">
                     </div>
 
-                    <!-- Botones de Acción sobre INVENTARIO -->
+                    <!-- Botones de Accion sobre INVENTARIO -->
                     <div class="button-group" style="flex-direction: row; flex-wrap: wrap; margin-top: 1.5rem;">
                         <button type="submit" id="submitBtnEquipment" class="btn btn-submit" data-i18n="addEquipment" style="flex: 1; min-width: 180px;">
                              Añadir Equipo
@@ -285,7 +277,7 @@
                         <button type="button" class="btn btn-clear" id="cancelEditBtn"
                             style="display: none; flex: 1; min-width: 140px; background-color: #fca5a5; color: white; border:none;"
                             onclick="cancelEdit()" data-i18n="cancelEdit">
-                            ❌ Cancelar Edición
+                            ✕ Cancelar Edicion
                         </button>
                     </div>
                 </form>
@@ -296,7 +288,7 @@
         <div class="output-section glass-card" id="viewOfficesTable">
             <h2
                 style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-                <span data-i18n="officeManagerSub">📋 Gestor de Oficinas y Clientes</span><span id="officeCountBadge"
+                <span data-i18n="officeManagerSub">🏢 Gestor de Oficinas y Clientes</span><span id="officeCountBadge"
                         style="font-size: 0.9rem; background: #e0e7ff; color: #4338ca; padding: 0.25rem 0.75rem; border-radius: 9999px;">
                         0 oficinas
                     </span>
@@ -325,10 +317,10 @@
                     <thead>
                         <tr>
                             <th data-i18n="companyLabel">Empresa / Cliente</th>
-                            <th data-i18n="locationLabel">Ubicación</th>
+                            <th data-i18n="locationLabel">Ubicacion</th>
                             <th data-i18n="techAuditor">Auditor</th>
                             <th style="text-align: center;" data-i18n="equips">Equipos</th>
-                            <th class="action-col" style="text-align: center;" data-i18n="actionsLabel">Acción</th>
+                            <th class="action-col" style="text-align: center;" data-i18n="actionsLabel">Accion</th>
                         </tr>
                     </thead>
                     <tbody id="officesTableBody">
@@ -346,41 +338,10 @@
                 data-i18n="backToOffices">
                 ⬅️ Volver a Oficinas
             </button>
-            <!-- Encabezado exclusivo de Impresión -->
-            <div class="header-print">
-                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
-                        stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path
-                            d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16">
-                        </path>
-                        <path d="M10 22h4"></path>
-                    </svg>
-                    <h1 style="color:#0f172a; margin-bottom:0; font-size: 1.5rem;">PocketITCheck</h1>
-                </div>
-                <div>
-                    <h2 style="color:#0f172a; font-size: 1.3rem; margin-bottom: 0.2rem;" data-i18n="newEquipment">
-                        Inventario de Equipos IT</h2>
-                    <p style="color:#64748b; font-size: 1rem;" id="printDate"></p>
-                </div>
-            </div>
-
-            <div id="printOfficeInfo" class="office-info-print" style="display: none; font-size: 0.9rem;">
-                <h3
-                    style="margin-bottom:0.8rem; font-size:1.1rem; border-bottom:1px solid #e2e8f0; padding-bottom:0.3rem;">
-                    Información del Levantamiento</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-                    <div><strong data-i18n="companyLabel">Empresa:</strong> <span id="print_company">-</span></div>
-                    <div><strong data-i18n="deptLabel">Departamento:</strong> <span id="print_depto">-</span></div>
-                    <div><strong data-i18n="locationLabel">Ubicación:</strong> <span id="print_location">-</span></div>
-                    <div><strong data-i18n="techAuditor">Auditor:</strong> <span id="print_auditor">-</span></div>
-                </div>
-            </div>
-
             <h2
                 style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                 <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                    <span>📋 Inventario de Equipos</span>
+                    <span data-i18n="pdfInventoryTitle">📋 Inventario de Equipos</span>
                     <span id="itemCount" class="badge-count" style="margin-right: 10px;">0 items</span>
                     <button class="btn btn-submit" style="padding: 0.4rem 0.8rem; min-height: 0; font-size: 0.9rem;" onclick="showAddEquipmentForm()" data-i18n="addEquipment">+ Nuevo Equipo</button>
                 </div>
@@ -418,27 +379,27 @@
                         <tr>
                             <th data-i18n="assetTagLabel">ID Activo</th>
                             <th data-i18n="infoGeneral">Info General</th>
-                            <th data-i18n="statusAssignment">Estado & Asignación</th>
-                            <th data-i18n="techSpecs">Especificaciones Técnicas</th>
-                            <th class="action-col" style="text-align: center;" data-i18n="actionsLabel">Acción</th>
+                            <th data-i18n="statusAssignment">Estado & Asignacion</th>
+                            <th data-i18n="techSpecs">Especificaciones Tecnicas</th>
+                            <th class="action-col" style="text-align: center;" data-i18n="actionsLabel">Accion</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
-                        <!-- Las filas se renderizan dinámicamente -->
+                        <!-- Las filas se renderizan dinamicamente -->
                     </tbody>
                 </table>
             </div>
             <div id="equipmentPagination" class="pagination-container"></div>
         </div>
 
-        <!-- CUERPO DERECHO: VISTA Diagnóstico Integrado -->
+        <!-- CUERPO DERECHO: VISTA Diagnostico Integrado -->
         <div class="output-section glass-card" id="diag-integrated-section" style="display: none;">
             <div class="diag-header"
                 style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #f1f5f9; padding-bottom: 1rem; margin-bottom: 1.5rem;">
                 <div style="flex: 1; min-width: 0;">
                     <h2 id="diag-title"
                         style="margin: 0; color: var(--primary); word-break: break-all; white-space: normal;"
-                        data-i18n="diagTitle">🩺 Diagnóstico Técnico</h2>
+                        data-i18n="diagTitle">🩺 Diagnostico Tecnico</h2>
                     <p id="diag-subtitle"
                         style="margin: 0.2rem 0 0 0; color: var(--text-light); word-break: break-all; white-space: normal;">
                     </p>
@@ -451,11 +412,11 @@
 
             <div style="margin-top: 2rem; border-top: 2px solid #f1f5f9; padding-top: 1.5rem;">
                 <label style="display: block; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-main);"
-                    data-i18n="observations">📝
+                    data-i18n="observations">📍 
                     Observaciones y Recomendaciones:</label>
                 <textarea id="diag-notes-input" class="diag-notes"
                     style="width: 100%; min-height: 100px; padding: 1rem; border-radius: 12px; border: 1px solid #cbd5e1; font-family: inherit; resize: vertical;"
-                    placeholder="Detalles técnicos encontrados..." data-i18n-placeholder="diagNotesPl"></textarea>
+                    placeholder="Detalles tecnicos encontrados..." data-i18n-placeholder="diagNotesPl"></textarea>
 
                 <div class="button-group" style="margin-top: 1.5rem;">
                     <button class="btn btn-submit" style="flex: 2; padding: 0.75rem;"
@@ -463,7 +424,7 @@
                         Activo</button>
                     <button class="btn btn-clear"
                         style="flex: 1; padding: 0.75rem; background-color: #fca5a5; color: white; border: none;"
-                        onclick="closeIntegratedDiagnostic()" data-i18n="close">❌ Cerrar</button>
+                        onclick="closeIntegratedDiagnostic()" data-i18n="close">✕ Cerrar</button>
                 </div>
             </div>
         </div>
@@ -486,13 +447,13 @@
                     <label style="font-weight: 700;" data-i18n="maintStatus">Estado del Mantenimiento:</label>
                     <select id="result-status"
                         style="width:100%; padding: 0.6rem; border-radius: 8px; border: 1px solid #cbd5e1; font-family: inherit;">
-                        <option value="Pendiente">⏳ Pendiente</option>
-                        <option value="Parcial">🛠️ Parcial</option>
+                        <option value="Pendiente">⌛ Pendiente</option>
+                        <option value="Parcial">🔧 Parcial</option>
                         <option value="Completado">✅ Completado</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label style="font-weight: 700;" data-i18n="execDate">Fecha de Ejecución:</label>
+                    <label style="font-weight: 700;" data-i18n="execDate">Fecha de Ejecucion:</label>
                     <input type="date" id="result-date"
                         style="width:100%; padding: 0.6rem; border-radius: 8px; border: 1px solid #cbd5e1; font-family: inherit;">
                 </div>
@@ -509,7 +470,7 @@
 
             <div style="margin-top: 1.5rem; border-top: 2px solid #f1f5f9; padding-top: 1.5rem;">
                 <label style="display: block; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-main);"
-                    data-i18n="postMaintNotes">📝
+                    data-i18n="postMaintNotes">📍 
                     Notas Post-Mantenimiento:</label>
                 <textarea id="result-notes-input"
                     style="width: 100%; min-height: 100px; padding: 1rem; border-radius: 12px; border: 1px solid #cbd5e1; font-family: inherit; resize: vertical;"
@@ -521,25 +482,47 @@
                         data-i18n="saveResult">💾 Guardar Resultado</button>
                     <button class="btn btn-clear"
                         style="flex: 1; padding: 0.75rem; background-color: #fca5a5; color: white; border: none;"
-                        onclick="closeMaintenanceResult()" data-i18n="close">❌ Cerrar</button>
+                        onclick="closeMaintenanceResult()" data-i18n="close">✕ Cerrar</button>
                 </div>
             </div>
         </div>
 
-        <!-- Footer con Créditos y Licencia -->
+        <!-- Footer con Creditos y Licencia -->
         <footer class="app-footer glass-card">
             <div class="credits-info">
                 Desarrollado por <strong>Carlos Noguera</strong> <br>
                 Contacto: <a href="mailto:cnoguera.dev@gmail.com">cnoguera.dev@gmail.com</a>
             </div>
             <div class="license-info">
-                <span>Esta obra y código fuente están bajo una <br> <a rel="license" href="LICENSE"
+                <span>Esta obra y codigo fuente estan bajo una <br> <a rel="license" href="LICENSE"
                         target="_blank">Licencia MIT</a>.</span>
             </div>
         </footer>
-    </div>
+        </div>
+    </main>
 
-    <!-- Script de lógica principal módulo ESM -->
+    <!-- BottomNavBar Execution -->
+    <nav class="bottom-nav">
+        <a class="nav-item active" href="#" onclick="goBackToOffices(); return false;">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span class="nav-label" data-i18n="dashboardLabel">Dashboard</span>
+        </a>
+        <a class="nav-item" href="#" onclick="showAddOfficeForm(); return false;">
+            <span class="material-symbols-outlined">add_circle</span>
+            <span class="nav-label" data-i18n="newOffice">Nueva Oficina</span>
+        </a>
+        <a class="nav-item" href="#">
+            <span class="material-symbols-outlined">settings</span>
+            <span class="nav-label" data-i18n="settingsLabel">Settings</span>
+        </a>
+    </nav>
+
+    <!-- FAB -->
+    <button class="fab" id="mainFAB" onclick="handleFABClick()">
+        <span class="material-symbols-outlined">add</span>
+    </button>
+
+    <!-- Script de logica principal modulo ESM -->
     <script src="app.js" type="module"></script>
 </body>
 

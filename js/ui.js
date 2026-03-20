@@ -78,12 +78,12 @@ export const categoryFields = {
         { id: "dyn_panel", i18nKey: "panel", type: "text", placeholder: "Ej: IPS / VA / TN" },
         { id: "dyn_conn", i18nKey: "conn", type: "text", placeholder: "Ej: HDMI, DisplayPort" }
     ],
-    "Periférico": [
-        { id: "dyn_type", i18nKey: "type", type: "text", placeholder: "Ej: Teclado Mecánico / Mouse" },
-        { id: "dyn_conn", i18nKey: "conn", type: "text", placeholder: "Ej: USB / Inalámbrico" }
+    "Periferico": [
+        { id: "dyn_type", i18nKey: "type", type: "text", placeholder: "Ej: Teclado Mecanico / Mouse" },
+        { id: "dyn_conn", i18nKey: "conn", type: "text", placeholder: "Ej: USB / Inalambrico" }
     ],
     "Impresora": [
-        { id: "dyn_type", i18nKey: "type", type: "text", placeholder: "Ej: Láser / Inyección" },
+        { id: "dyn_type", i18nKey: "type", type: "text", placeholder: "Ej: Laser / Inyeccion" },
         { id: "dyn_toner", i18nKey: "toner", type: "text", placeholder: "Ej: HP 85A / Canon G3100" },
         { id: "dyn_ip", i18nKey: "ip", type: "text", placeholder: "Ej: 192.168.1.50" },
         { id: "dyn_mac", i18nKey: "mac", type: "text", placeholder: "Ej: 00:1A:..." }

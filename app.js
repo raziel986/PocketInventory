@@ -20,6 +20,8 @@ let tableState = {
     equipment: { searchQuery: '', currentPage: 1, itemsPerPage: 10 }
 };
 
+const statusColorMap = { Activo: '#10b981', Stock: '#3b82f6', Reparacion: '#f59e0b', Baja: '#ef4444' };
+
 const DIAG_STRUCTURE = [
     {
         category: 'hardware',
@@ -65,7 +67,8 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtnEquip: document.getElementById('submitBtnEquipment'),
         cancelEditBtn: document.getElementById('cancelEditBtn'),
         countBadge: document.getElementById('itemCount'),
-        officeCountBadge: document.getElementById('officeCountBadge')
+        officeCountBadge: document.getElementById('officeCountBadge'),
+        mainFAB: document.getElementById('mainFAB')
     };
 
     // Office form submit
@@ -143,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
             dom.sidebarEquip.style.display = 'none';
             dom.viewEquip.style.display = 'block';
             renderTable();
-            Swal.fire({ title: t(currentLang, 'successMsg'), icon: 'success', timer: 1200, showConfirmButton: false });
+            Swal.fire({ title: t(currentLang, 'successMsg'), icon: 'success', timer: 1200, showConfirmButton: false, confirmButtonColor: '#3525cd' });
         });
     }
 
@@ -276,6 +279,14 @@ window.hideAddOfficeForm = () => {
     dom.viewOffices.style.display = 'block';
 };
 
+window.handleFABClick = () => {
+    if (activeOfficeId) {
+        window.showAddEquipmentForm();
+    } else {
+        window.showAddOfficeForm();
+    }
+};
+
 function updateOfficeSummaryUI(o) {
     dom.activeOfficeSummary.innerHTML = `
         <div style="font-weight: 600; margin-bottom:0.3rem;">🏢 ${o.company}</div>
@@ -289,40 +300,105 @@ function updateOfficeSummaryUI(o) {
 
 // Offices Rendering
 function renderOfficesTable() {
-    if (!dom.officesTbody) return;
-    dom.officesTbody.innerHTML = '';
+    // Robust selection of list container
+    let listContainer = document.getElementById('officesListContainer');
+    if (!listContainer) {
+        const viewOffices = document.getElementById('viewOfficesTable');
+        if (!viewOffices) return;
+        const tableCont = viewOffices.querySelector('.table-container');
+        if (tableCont) {
+            tableCont.style.display = 'none';
+            listContainer = document.createElement('div');
+            listContainer.id = 'officesListContainer';
+            tableCont.parentNode.insertBefore(listContainer, tableCont.nextSibling);
+        } else {
+            listContainer = document.createElement('div');
+            listContainer.id = 'officesListContainer';
+            viewOffices.appendChild(listContainer);
+        }
+    }
+
+    listContainer.innerHTML = '';
     const state = tableState.offices;
     let filtered = appData.filter(o =>
-        o.company.toLowerCase().includes(state.searchQuery) ||
-        o.depto.toLowerCase().includes(state.searchQuery) ||
-        o.location.toLowerCase().includes(state.searchQuery) ||
-        o.auditor.toLowerCase().includes(state.searchQuery)
+        (o.company || '').toLowerCase().includes(state.searchQuery) ||
+        (o.depto || '').toLowerCase().includes(state.searchQuery) ||
+        (o.location || '').toLowerCase().includes(state.searchQuery) ||
+        (o.auditor || '').toLowerCase().includes(state.searchQuery)
     );
 
+    if (dom.officeCountBadge) dom.officeCountBadge.textContent = `${appData.length} ${t(currentLang, 'officesCount')}`;
+
     if (filtered.length === 0) {
-        dom.officesTbody.innerHTML = `<tr><td colspan="5" class="empty-state"><div style="font-size: 2rem; margin-bottom: 1rem;">🏢</div>${t(currentLang, state.searchQuery ? 'noResults' : 'emptyOffices')}</td></tr>`;
+        listContainer.innerHTML = `<div class="glass-card" style="text-align:center; padding: 4rem 2rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🏢</div>
+            <h3 style="margin-bottom:0.5rem;">${t(currentLang, 'emptyOffices')}</h3>
+            <p style="color:var(--outline);">${t(currentLang, 'noResults')}</p>
+        </div>`;
     } else {
+        const grid = document.createElement('div');
+        grid.className = 'grid-container';
+        grid.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;';
+        listContainer.appendChild(grid);
+        
         const start = (state.currentPage - 1) * state.itemsPerPage;
         const paged = state.itemsPerPage === Infinity ? filtered : filtered.slice(start, start + state.itemsPerPage);
+        
         paged.forEach(office => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td data-label="${t(currentLang, 'companyLabel')}"><strong class="text-primary">${office.company}</strong><br /><span class="text-secondary">${t(currentLang, 'deptLabel')}: ${office.depto}</span></td>
-                <td data-label="${t(currentLang, 'locationLabel')}">${office.location}</td>
-                <td data-label="${t(currentLang, 'techAuditor')}">${office.auditor}</td>
-                <td data-label="${t(currentLang, 'equips')}" class="text-center"><span class="badge-count">${office.inventory.length}</span></td>
-                <td data-label="${t(currentLang, 'actionsLabel')}" class="action-col">
-                    <div class="action-icons">
-                        <button class="icon-btn icon-btn-info" onclick="selectOffice('${office.id}')">📂</button>
-                        <button class="icon-btn icon-btn-edit" onclick="editOffice('${office.id}')">✏️</button>
-                        <button class="icon-btn icon-btn-danger" onclick="deleteOfficeHandler('${office.id}')">🗑️</button>
+            const card = document.createElement('div');
+            card.className = 'glass-card office-card';
+            card.innerHTML = `
+                <div class="office-info">
+                    <div class="office-icon">
+                        <span class="material-symbols-outlined">business</span>
                     </div>
-                </td>`;
-            dom.officesTbody.appendChild(tr);
+                    <div class="office-details">
+                        <h3>${office.company}</h3>
+                        <div style="font-size: 0.85rem; color: var(--on-surface-variant); font-weight:500;">
+                            ${t(currentLang, 'deptLabel')}: <b style="color:var(--primary); font-weight:700;">${office.depto}</b>
+                        </div>
+                    </div>
+                </div>
+                <div class="office-meta">
+                    <div class="meta-item">
+                        <span class="material-symbols-outlined">location_on</span>
+                        <span>${office.location}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="material-symbols-outlined">person_check</span>
+                        <span>Auditor: ${office.auditor}</span>
+                    </div>
+                </div>
+                <div class="office-stats">
+                    <div class="stat-badge">
+                        <span class="stat-value">${(office.inventory || []).length}</span>
+                        <span class="stat-label">${t(currentLang, 'equips')}</span>
+                    </div>
+                    <div class="stat-date">
+                        <span class="material-symbols-outlined">calendar_today</span>
+                        <span>${office.auditDate}</span>
+                    </div>
+                </div>
+                <div class="office-actions" style="display: flex; gap: 0.5rem; margin-top: 1.25rem;">
+                    <button class="btn btn-primary btn-sm" onclick="selectOffice('${office.id}')" style="flex:1;">
+                        <span class="material-symbols-outlined">visibility</span> Ver
+                    </button>
+                    <button class="icon-btn-circle" onclick="editOffice('${office.id}')">
+                        <span class="material-symbols-outlined">edit</span>
+                    </button>
+                    <button class="icon-btn-circle btn-danger" onclick="deleteOfficeHandler('${office.id}')">
+                        <span class="material-symbols-outlined">delete</span>
+                    </button>
+                </div>
+            `;
+            grid.appendChild(card);
         });
-        updatePagination('offices', filtered.length, 'officePagination', state, currentLang, (p) => { state.currentPage = p; renderOfficesTable(); });
+
+        const paginationCont = document.getElementById('officePagination');
+        if (paginationCont) {
+            updatePagination('offices', filtered.length, paginationCont);
+        }
     }
-    if (dom.officeCountBadge) dom.officeCountBadge.textContent = `${filtered.length} ${t(currentLang, 'officesCount')}`;
 }
 
 window.editOffice = (id) => {
@@ -381,32 +457,33 @@ function renderTable() {
         paged.forEach(item => {
             const hasDiag = item.diagnostics ? Object.values({...item.diagnostics.hardware,...item.diagnostics.software}).some(v => v === false) : false;
             const hasMaint = !!item.maintenanceResult;
-            const statusColorMap = { Activo:'#10b981', Stock:'#3b82f6', 'Reparación':'#f59e0b', Baja:'#ef4444' };
             const statusColor = statusColorMap[item.status] || '#64748b';
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td data-label="${t(currentLang,'assetTagLabel')}"><strong>${item.assetTag}</strong></td>
+                <td data-label="${t(currentLang,'assetTagLabel')}"><span class="section-label" style="background:var(--primary-container); color:var(--on-primary-container);">${item.assetTag}</span></td>
                 <td data-label="${t(currentLang,'infoGeneral')}">
-                    <span style="font-weight:600; color:var(--primary);">${t(currentLang, item.type)}</span><br/>
-                    <span style="font-weight:500;">${item.model}</span>
-                    ${item.specs ? `<div style="font-size:0.75rem; color:#64748b; margin-top:4px; display:flex; flex-wrap:wrap; gap:4px;">
+                    <div style="font-family:var(--font-headline); font-weight:700; color:var(--primary);">${t(currentLang, item.type)}</div>
+                    <div style="font-weight:600; font-size:0.9rem;">${item.model}</div>
+                    ${item.specs ? `<div style="font-size:0.75rem; color:var(--outline); margin-top:4px; display:flex; flex-wrap:wrap; gap:8px;">
                         ${Object.entries(item.specs).filter(([k,v]) => v).map(([k,v]) => `<span>• ${v}</span>`).join('')}
                     </div>` : ''}
                 </td>
                 <td data-label="${t(currentLang,'statusAssignment')}">
-                    <span style="display:inline-block;padding:2px 10px;border-radius:99px;background:${statusColor}22;color:${statusColor};font-weight:600;font-size:0.82rem;">${t(currentLang, item.status)}</span><br/>
-                    <span style="font-size:0.82rem;color:#64748b;">${item.user}</span>
+                    <span class="badge-status status-${item.status.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}">${t(currentLang, item.status)}</span><br/>
+                    <div style="font-size:0.85rem; color:var(--outline); margin-top:4px;">
+                        <span class="material-symbols-outlined" style="font-size:0.9rem; vertical-align:middle;">person</span> ${item.user}
+                    </div>
                 </td>
-                <td data-label="${t(currentLang,'techSpecs')}" style="font-size:0.82rem;color:#475569;">
-                    <span style="color:#94a3b8;">S/N:</span> ${item.serial || '-'}<br/>
-                    ${item.purchaseDate ? `<span style="color:#94a3b8; font-size:0.75rem;">📅 ${item.purchaseDate}</span>` : ''}
+                <td data-label="${t(currentLang,'techSpecs')}">
+                    <div style="font-size:0.85rem;"><span style="color:var(--outline);">S/N:</span> <b>${item.serial || '-'}</b></div>
+                    ${item.purchaseDate ? `<div style="font-size:0.75rem; color:var(--outline); margin-top:2px;">📅 ${item.purchaseDate}</div>` : ''}
                 </td>
                 <td data-label="${t(currentLang,'actionsLabel')}" class="action-col">
-                    <div class="action-icons">
-                        <button class="icon-btn icon-btn-info" onclick="editEquipment(${item.originalIndex})" title="${t(currentLang,'editEquipment')}">✏️</button>
-                        <button class="icon-btn icon-btn-info" onclick="openDiagnostic(${item.originalIndex})" title="${t(currentLang,'integratedDiag')}">🩺</button>
-                        <button class="icon-btn" style="background:${hasMaint ? '#d1fae5' : '#fef3c7'};color:${hasMaint ? '#065f46' : '#92400e'};" onclick="openMaintenanceResult(${item.originalIndex})" title="${t(currentLang,'maintResult')}">✅</button>
-                        <button class="icon-btn icon-btn-danger" onclick="deleteItem(${item.originalIndex})" title="${t(currentLang,'deleteBtn')}">🗑️</button>
+                    <div style="display:flex; gap:0.25rem;">
+                        <button class="menu-btn" onclick="editEquipment(${item.originalIndex})" title="${t(currentLang,'editEquipment')}"><span class="material-symbols-outlined">edit</span></button>
+                        <button class="menu-btn" onclick="openDiagnostic(${item.originalIndex})" title="${t(currentLang,'integratedDiag')}" style="color:var(--primary);"><span class="material-symbols-outlined">biotech</span></button>
+                        <button class="menu-btn" onclick="openMaintenanceResult(${item.originalIndex})" title="${t(currentLang,'maintResult')}" style="color:${hasMaint ? '#10b981' : '#f59e0b'};"><span class="material-symbols-outlined">${hasMaint ? 'task_alt' : 'tools_wrench'}</span></button>
+                        <button class="menu-btn" onclick="deleteItem(${item.originalIndex})" title="${t(currentLang,'deleteBtn')}" style="color:var(--error);"><span class="material-symbols-outlined">delete</span></button>
                     </div>
                 </td>`;
             dom.equipTbody.appendChild(tr);
