@@ -1,19 +1,9 @@
 import { applyTranslations, updatePagination, categoryFields } from './js/ui.js';
 import { t, tPdf } from './js/translations.js';
 import { getStatusColor, drawHeaderTypeA, drawHeaderTypeB, drawSubheader, drawModelSignatures, addModelPageNumbers } from './js/pdf_engine.js';
-import { PocketIT_SDK } from '../PocketIT-SDK/src/index.js';
+import { getAllOffices, saveOffice, deleteOffice, migrateFromLocalStorage } from './js/db.js';
 
 // State
-const sdk = new PocketIT_SDK({
-    dbName: 'PocketITCheckDB',
-    dbVersion: 1
-});
-
-const CHECK_SCHEMA = {
-    offices: { keyPath: 'id' }
-};
-
-let platform;
 let currentLang = localStorage.getItem('pocketITCheckLang') || 'es';
 let appData = [];
 let activeOfficeId = null;
@@ -55,8 +45,6 @@ const DIAG_STRUCTURE = [
 let dom = {};
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // 0. Launch Platform
-    platform = await sdk.launch(CHECK_SCHEMA);
     
     dom = {
         splash: document.getElementById('splash-screen'),
@@ -97,7 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 managerTitle: document.getElementById('officeManagerTitle').value.trim(),
                 inventory: editingOfficeId ? (appData.find(o => o.id === editingOfficeId) || { inventory: [] }).inventory : []
             };
-            await platform.storage.save('offices', newOffice);
+            await saveOffice(newOffice);
             if (editingOfficeId) {
                 const idx = appData.findIndex(o => o.id === editingOfficeId);
                 if (idx !== -1) appData[idx] = newOffice;
@@ -404,10 +392,8 @@ function renderOfficesTable() {
             grid.appendChild(card);
         });
 
-        const paginationCont = document.getElementById('officePagination');
-        if (paginationCont) {
-            updatePagination('offices', filtered.length, paginationCont);
-        }
+        const state_o = tableState.offices;
+        updatePagination('offices', filtered.length, 'officePagination', state_o, currentLang, (p) => { state_o.currentPage = p; renderOfficesTable(); });
     }
 }
 
@@ -522,6 +508,7 @@ window.editEquipment = (idx) => {
     // Show form, hide table
     dom.viewEquip.style.display = 'none';
     dom.sidebarEquip.style.display = 'block';
+    const title = document.getElementById('equipmentFormTitle');
     if (title) title.textContent = '📋 ' + t(currentLang, 'editEquipment');
     if (dom.cancelEditBtn) dom.cancelEditBtn.style.display = 'inline-block';
     const subBtn = document.getElementById('submitBtnEquipment');
@@ -565,7 +552,7 @@ window.toggleDates = () => {
     const val = document.getElementById('hasWarranty').value;
     const pContainer = document.getElementById('purchaseDateContainer');
     const wContainer = document.getElementById('warrantyDateContainer');
-    if (val === 'Sí') {
+    if (val === 'Si') {
         if (pContainer) pContainer.style.display = 'block';
         if (wContainer) wContainer.style.display = 'block';
     } else {
